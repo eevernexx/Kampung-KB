@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QnA Kampung KB - Tanya Jawab Seputar Kampung Keluarga Berencana</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .logo {
+            color: white;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.2rem;
+        }
+
+        .logo p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 60px 0 40px;
+            text-align: center;
+            color: white;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.3s forwards;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* QnA Section */
+        .qna-section {
+            padding: 60px 0;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .qna-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .qna-section h3 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #1e3c72;
+        }
+
+        /* Google Form Embed */
+        .form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(30, 60, 114, 0.1);
+            border: 2px solid #e3f2fd;
+            text-align: center;
+        }
+
+        .form-embed {
+            width: 100%;
+            height: 600px;
+            border: none;
+            border-radius: 10px;
+        }
+
+        .form-info {
+            background: #e3f2fd;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            color: #1e3c72;
+        }
+
+        .form-info strong {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Alternative Form Button */
+        .form-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            transition: all 0.3s;
+        }
+
+        .form-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(30, 60, 114, 0.3);
+            text-decoration: none;
+            color: white;
+        }
+
+        /* Questions Display */
+        .questions-display {
+            margin-top: 3rem;
+        }
+
+        .questions-display h4 {
+            color: #1e3c72;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .question-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.1);
+            border-left: 4px solid #2a5298;
+            transition: all 0.3s;
+        }
+
+        .question-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(30, 60, 114, 0.15);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .question-author {
+            font-weight: bold;
+            color: #1e3c72;
+            font-size: 0.95rem;
+        }
+
+        .question-time {
+            font-size: 0.8rem;
+            color: #666;
+            background: #f0f8ff;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .question-text {
+            line-height: 1.6;
+            color: #444;
+            margin-bottom: 1rem;
+        }
+
+        .question-category {
+            display: inline-block;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+        }
+
+        .question-status {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+
+        .status-answered {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status-pending {
+            background: #ff9800;
+            color: white;
+        }
+
+        .answer {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border-left: 3px solid #4caf50;
+        }
+
+        .answer-header {
+            font-weight: bold;
+            color: #4caf50;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .answer-text {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        footer {
+            background: #1e3c72;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .loading::after {
+            content: "...";
+            animation: dots 2s infinite;
+        }
+
+        @keyframes dots {
+            0% { content: ""; }
+            25% { content: "."; }
+            50% { content: ".."; }
+            75% { content: "..."; }
+            100% { content: ""; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .form-container {
+                padding: 1.5rem;
+            }
+            
+            .form-embed {
+                height: 500px;
+            }
+            
+            .question-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>QnA Kampung KB</h1>
+                    <p>Tanya Jawab Seputar Kampung Keluarga Berencana</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h2>Punya Pertanyaan tentang Kampung KB?</h2>
+            <p>Ajukan pertanyaan Anda seputar Kampung Keluarga Berencana dan dapatkan jawaban dari tim ahli kami</p>
+        </div>
+    </section>
+
+    <!-- QnA Section -->
+    <section class="qna-section">
+        <div class="container">
+            <div class="qna-container">
+                <h3>📝 Ajukan Pertanyaan Anda</h3>
+                
+                <div class="form-container">
+                    <div class="form-info">
+                        <strong>💡 Cara menggunakan:</strong>
+                        Isi form di bawah ini untuk mengajukan pertanyaan. Pertanyaan Anda akan dijawab oleh tim ahli dalam waktu 1x24 jam.
+                    </div>
+                    
+                    <!-- Embedded Google Form -->
+                    <iframe 
+                        src="https://docs.google.com/forms/d/e/1FAIpQLSeB5iT6HGGnUgq4V6P1bJEeBD6gAQvTOADhxG6YyPtS_0_oVQ/viewform?embedded=true" 
+                        class="form-embed"
+                        frameborder="0" 
+                        marginheight="0" 
+                        marginwidth="0">
+                        Loading…
+                    </iframe>
+                    
+                    <!-- Alternative button for mobile -->
+                    <div style="margin-top: 1rem;">
+                        <p style="margin-bottom: 1rem; color: #666;">Jika form tidak muncul atau di mobile, klik tombol di bawah:</p>
+                        <a href="https://docs.google.com/forms/d/1sB52cuwKDKzmT6GiZqJMKKvSYcQYaQOmXJiu-tZDRqM/viewform" 
+                           target="_blank" 
+                           class="form-button">
+                           🔗 Buka Form di Tab Baru
+                        </a>
+                    </div>
+                </div>
+
+                <div class="questions-display" id="questionsDisplay">
+                    <h4>💬 Pertanyaan & Jawaban Terbaru</h4>
+                    <div class="loading" id="loadingMessage">Memuat pertanyaan dan jawaban</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p><strong>QnA Kampung KB</strong></p>
+                <p>Platform tanya jawab untuk mendukung program Kampung Keluarga Berencana</p>
+                <p style="margin-top: 1rem; opacity: 0.8;">&copy; 2025 - Pertanyaan akan dijawab dalam 1x24 jam</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Google Sheets API configuration
+        const SHEET_ID = '14gRlgi-XiDMPiaU-cga2FZE_n09NYIIFcTQo3xOskBU';
+        const SHEET_RANGE = 'Form Responses 1!A:F'; // Adjust range as needed
+        
+        // Sample data for demonstration (will be replaced by actual data)
+        let sampleQuestions = [
+            {
+                name: "Ibu Sari Wulandari",
+                question: "Bagaimana cara mendaftarkan diri untuk mengikuti program KB di Kampung KB?",
+                category: "Program KB",
+                time: "2 jam yang lalu",
+                status: "answered",
+                answer: "Untuk mendaftar program KB, Ibu bisa datang langsung ke pos KB terdekat dengan membawa KTP dan KK. Petugas kami akan membantu proses pendaftaran dan konsultasi gratis."
+            },
+            {
+                name: "Bapak Ahmad Rizki", 
+                question: "Apa saja kegiatan rutin yang dilakukan di Kampung KB?",
+                category: "Kegiatan Kampung KB",
+                time: "5 jam yang lalu",
+                status: "answered",
+                answer: "Kegiatan rutin meliputi: posyandu bulanan, kelas ibu hamil, penyuluhan KB, senam sehat keluarga, dan konseling pranikah. Jadwal lengkap bisa dilihat di papan pengumuman RT/RW."
+            },
+            {
+                name: "Ibu Maya Sinta",
+                question: "Apakah layanan konseling KB di Kampung KB gratis?",
+                category: "Layanan Kesehatan", 
+                time: "1 hari yang lalu",
+                status: "pending"
+            }
+        ];
+
+        // Category colors
+        const categoryColors = {
+            'umum': '#6c757d',
+            'program kb': '#007bff', 
+            'kegiatan kampung kb': '#28a745',
+            'layanan kesehatan': '#17a2b8',
+            'administrasi': '#fd7e14'
+        };
+
+        // Display questions function
+        function displayQuestions(questions = sampleQuestions) {
+            const questionsContainer = document.getElementById('questionsDisplay');
+            const loadingMessage = document.getElementById('loadingMessage');
+            
+            if (questions.length === 0) {
+                questionsContainer.innerHTML = `
+                    <h4>💬 Pertanyaan & Jawaban Terbaru</h4>
+                    <div class="question-item">
+                        <p style="text-align: center; color: #666;">Belum ada pertanyaan. Jadilah yang pertama bertanya!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const questionsHTML = questions.map(q => {
+                const categoryKey = q.category.toLowerCase();
+                const categoryColor = categoryColors[categoryKey] || categoryColors.umum;
+                
+                return `
+                    <div class="question-item">
+                        <div class="question-header">
+                            <span class="question-author">👤 ${q.name}</span>
+                            <span class="question-time">🕒 ${q.time}</span>
+                        </div>
+                        <div class="question-text">${q.question}</div>
+                        <div style="margin-top: 0.5rem;">
+                            <span class="question-category" style="background: ${categoryColor};">
+                                📂 ${q.category}
+                            </span>
+                            <span class="question-status ${q.status === 'answered' ? 'status-answered' : 'status-pending'}">
+                                ${q.status === 'answered' ? '✅ Terjawab' : '⏳ Menunggu Jawaban'}
+                            </span>
+                        </div>
+                        ${q.answer ? `
+                            <div class="answer">
+                                <div class="answer-header">💡 Jawaban dari Tim Kampung KB:</div>
+                                <div class="answer-text">${q.answer}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+            
+            questionsContainer.innerHTML = '<h4>💬 Pertanyaan & Jawaban Terbaru</h4>' + questionsHTML;
+            loadingMessage.style.display = 'none';
+        }
+
+        // Load data from Google Sheets (simplified version)
+        async function loadQuestionsFromSheet() {
+            try {
+                // This is a placeholder for actual Google Sheets API call
+                // For now, we'll use sample data
+                setTimeout(() => {
+                    displayQuestions(sampleQuestions);
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Error loading questions:', error);
+                displayQuestions(sampleQuestions);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQuestionsFromSheet();
+            
+            // Refresh questions every 30 seconds
+            setInterval(loadQuestionsFromSheet, 30000);
+        });
+
+        // Smooth scroll for better UX
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('a[href^="#"]')) {
+                e.preventDefault();
+                const target = document.querySelector(e.target.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
