@@ -393,16 +393,7 @@
                     <!-- Connection Status -->
                     <div id="connectionStatus"></div>
                     
-                    <!-- Manual Refresh Button -->
-                    <div style="text-align: center; margin-top: 1rem;">
-                        <button id="refreshBtn" onclick="loadQuestionsFromSheet()" 
-                                style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">
-                            🔄 Refresh Data
-                        </button>
-                        <p style="font-size: 0.8rem; color: #666; margin-top: 0.5rem;">
-                            Klik tombol di atas untuk memuat data terbaru
-                        </p>
-                    </div>
+
                 </div>
 
                 <div class="questions-display" id="questionsDisplay">
@@ -522,13 +513,10 @@
                             <span class="question-category" style="background: ${categoryColor};">
                                 📂 ${q.category || 'Umum'}
                             </span>
-                            <span class="question-status ${q.status === 'answered' ? 'status-answered' : 'status-pending'}">
-                                ${q.status === 'answered' ? '✅ Terjawab' : '⏳ Menunggu Jawaban'}
-                            </span>
                         </div>
                         ${q.answer ? `
                             <div class="answer">
-                                <div class="answer-header">💡 Jawaban dari Tim Kampung KB:</div>
+                                <div class="answer-header">❓ Pertanyaan yang ditanyakan:</div>
                                 <div class="answer-text">${q.answer}</div>
                             </div>
                         ` : ''}
