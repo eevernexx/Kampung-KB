@@ -392,6 +392,17 @@
 
                     <!-- Connection Status -->
                     <div id="connectionStatus"></div>
+                    
+                    <!-- Manual Refresh Button -->
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <button id="refreshBtn" onclick="loadQuestionsFromSheet()" 
+                                style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">
+                            🔄 Refresh Data
+                        </button>
+                        <p style="font-size: 0.8rem; color: #666; margin-top: 0.5rem;">
+                            Klik tombol di atas untuk memuat data terbaru
+                        </p>
+                    </div>
                 </div>
 
                 <div class="questions-display" id="questionsDisplay">
@@ -419,30 +430,15 @@
         const API_KEY = 'AIzaSyAoIM03NMmaPuKx4VuI40aWP0Ukoq-_HHA';
         const SHEET_NAME = 'Form Responses 1'; // This is the default name for Google Forms responses
         
-        // Sample data as fallback
+        // Sample data as fallback (minimal)
         let sampleQuestions = [
             {
-                name: "Ibu Sari Wulandari",
-                question: "Bagaimana cara mendaftarkan diri untuk mengikuti program KB di Kampung KB?",
-                category: "Program KB",
-                time: "2 jam yang lalu",
+                name: "Tim Admin",
+                question: "Selamat datang! Silakan ajukan pertanyaan Anda melalui form di atas.",
+                category: "Informasi",
+                time: "Baru saja",
                 status: "answered",
-                answer: "Untuk mendaftar program KB, Ibu bisa datang langsung ke pos KB terdekat dengan membawa KTP dan KK. Petugas kami akan membantu proses pendaftaran dan konsultasi gratis."
-            },
-            {
-                name: "Bapak Ahmad Rizki", 
-                question: "Apa saja kegiatan rutin yang dilakukan di Kampung KB?",
-                category: "Kegiatan Kampung KB",
-                time: "5 jam yang lalu",
-                status: "answered",
-                answer: "Kegiatan rutin meliputi: posyandu bulanan, kelas ibu hamil, penyuluhan KB, senam sehat keluarga, dan konseling pranikah. Jadwal lengkap bisa dilihat di papan pengumuman RT/RW."
-            },
-            {
-                name: "Ibu Maya Sinta",
-                question: "Apakah layanan konseling KB di Kampung KB gratis?",
-                category: "Layanan Kesehatan", 
-                time: "1 hari yang lalu",
-                status: "pending"
+                answer: "Pertanyaan yang Anda kirim melalui Google Form akan muncul di sini setelah diproses oleh tim kami."
             }
         ];
 
@@ -616,11 +612,12 @@
             console.log('🚀 Page loaded, initializing...');
             loadQuestionsFromSheet();
             
-            // Auto-refresh every 30 seconds
-            setInterval(() => {
-                console.log('🔄 Auto-refreshing data...');
-                loadQuestionsFromSheet();
-            }, 30000);
+            // Manual refresh button instead of auto-refresh
+            // Auto-refresh disabled to prevent API quota issues
+            // setInterval(() => {
+            //     console.log('🔄 Auto-refreshing data...');
+            //     loadQuestionsFromSheet();
+            // }, 30000);
         });
 
         // Smooth scroll for better UX
