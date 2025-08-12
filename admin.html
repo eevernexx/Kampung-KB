@@ -433,148 +433,189 @@
     </div>
 
     <script>
-  // === CONFIG ===
-  const APP_URL = 'PASTE_WEB_APP_URL_HERE'; // <-- ganti dengan URL Web App dari Apps Script
-  const categoryColors = {
-    'umum':'#6c757d','program kb':'#007bff','kegiatan kampung kb':'#28a745','layanan kesehatan':'#17a2b8','administrasi':'#fd7e14'
-  };
+  // ====== KONFIGURASI ======
+  const SHEET_ID   = '14gRlgi-XiDMPiaU-cga2FZE_n09NYIIFcTQo3xOskBU';
+  const API_KEY    = 'AIzaSyAoIM03NMmaPuKx4VuI40aWP0Ukoq-_HHA';
+  const SHEET_NAME = 'Form Responses 1';   // nama tab tepat (case-sensitive)
+  const RANGE      = 'A:E';                // sesuaikan kalau kolom melebar
 
-  let questionsData = []; // akan diisi dari server
+  // Helper tampilkan status
+  function showConnectionStatus(isConnected, message) {
+    const el = document.getElementById('connectionStatus');
+    if (!el) return;
+    el.innerHTML = isConnected
+      ? '<div class="success-indicator">✅ Terhubung ke database - Data real time aktif</div>'
+      : `<div class="error-message">⚠️ ${message} - Menampilkan data contoh sementara</div>`;
+  }
 
-  function formatTime(ts){
-    const d = new Date(ts), now = new Date();
-    const diff = now - d, h = Math.floor(diff/36e5), day = Math.floor(h/24);
-    if (isNaN(d.getTime())) return '-';
-    if (day>0) return `${day} hari yang lalu`;
-    if (h>0) return `${h} jam yang lalu`;
+  // Format waktu simpel
+  function formatTime(ts) {
+    if (!ts) return 'Waktu tidak diketahui';
+    const now = new Date();
+    const t   = new Date(ts);
+    const diffH = Math.floor((now - t) / (1000 * 60 * 60));
+    const diffD = Math.floor(diffH / 24);
+    if (diffD > 0) return `${diffD} hari yang lalu`;
+    if (diffH > 0) return `${diffH} jam yang lalu`;
     return 'Baru saja';
   }
 
-  // READ: ambil data dari Web App
-  async function loadQuestions(){
-    try{
-      document.getElementById('loadingMessage').style.display = 'block';
-      const res = await fetch(`${APP_URL}?action=list`, {method:'GET'});
-      const data = await res.json();
-      questionsData = (data.items || []).sort((a,b)=> new Date(b.timestamp) - new Date(a.timestamp));
-      displayQuestions(questionsData);
-      updateStats(questionsData);
-      document.getElementById('loadingMessage').style.display = 'none';
-    }catch(e){
-      console.error(e);
-      document.getElementById('questionsList').innerHTML = `
-        <div class="empty-state">
-          <h3>Gagal memuat data</h3><p>${String(e)}</p>
-        </div>`;
-    }
-  }
+  // Render ke UI (SESUIKAN dengan punyamu)
+  function renderQuestions(questions, isReal) {
+    const wrap = document.getElementById('questionsDisplay');
+    const loading = document.getElementById('loadingMessage');
+    if (loading) loading.style.display = 'none';
+    if (!wrap) return;
 
-  // WRITE: kirim jawaban ke Web App
-  async function submitAnswer(row){
-    const textarea = document.querySelector(`[data-question-id="${row}"]`);
-    const answer = (textarea?.value || '').trim();
-    if (!answer) { alert('Silakan masukkan jawaban terlebih dahulu'); return; }
-
-    const btn = textarea.parentElement.querySelector('button');
-    btn.disabled = true; btn.textContent = 'Menyimpan...';
-
-    try{
-      const res = await fetch(APP_URL, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({row, answer})
-      });
-      const result = await res.json();
-      if (!result.ok) throw new Error(result.error || 'Gagal menyimpan');
-
-      // update di memori & refresh tampilan
-      const idx = questionsData.findIndex(q => q.row === row);
-      if (idx > -1) {
-        questionsData[idx].answer = answer;
-      }
-      displayQuestions(questionsData);
-      updateStats(questionsData);
-
-      // toast sederhana
-      const msg = document.getElementById('successMessage');
-      msg.style.display='block'; setTimeout(()=>msg.style.display='none', 2500);
-    }catch(e){
-      alert('Gagal menyimpan jawaban: ' + String(e));
-    }finally{
-      btn.disabled = false; btn.textContent = '✏️ Update Jawaban';
-    }
-  }
-
-  function updateStats(data){
-    const total = data.length;
-    const pending = data.filter(q => !q.answer).length;
-    const answered = total - pending;
-    const todayStr = new Date().toISOString().slice(0,10);
-    const todayCount = data.filter(q => {
-      const d = new Date(q.timestamp); return d.toISOString().slice(0,10) === todayStr;
-    }).length;
-
-    document.getElementById('totalQuestions').textContent = total;
-    document.getElementById('pendingQuestions').textContent = pending;
-    document.getElementById('answeredQuestions').textContent = answered;
-    document.getElementById('todayQuestions').textContent = todayCount;
-  }
-
-  function displayQuestions(data){
-    const container = document.getElementById('questionsList');
-    if (!data.length) {
-      container.innerHTML = `
-        <div class="empty-state"><h3>📝 Belum Ada Pertanyaan</h3><p>Pertanyaan dari pengguna akan muncul di sini</p></div>`;
+    if (!questions || questions.length === 0) {
+      wrap.innerHTML = `
+        <h4>💬 Pertanyaan & Jawaban Terbaru</h4>
+        <div class="question-item"><p style="text-align:center;color:#666">Belum ada pertanyaan.</p></div>`;
       return;
     }
 
-    const html = data.map(q=>{
-      const catKey = (q.category||'Umum').toLowerCase();
-      const catColor = categoryColors[catKey] || categoryColors.umum;
-      const statusAnswered = !!q.answer;
+    const srcInfo = isReal
+      ? '<p style="text-align:center;color:#28a745;font-size:.9rem;margin-bottom:1rem;">📡 Data real-time dari Google Sheets</p>'
+      : '<p style="text-align:center;color:#ffc107;font-size:.9rem;margin-bottom:1rem;">⚠️ Menampilkan data contoh (fallback)</p>';
 
-      return `
-        <div class="question-item ${statusAnswered ? 'answered':'pending'}" data-id="${q.row}">
-          <div class="question-header">
-            <div class="question-meta">
-              <span class="author-name">👤 ${q.name||'Penanya Anonim'}</span>
-              ${q.email ? `<span class="question-time">✉️ ${q.email}</span>`:''}
-              <span class="question-time">🕒 ${formatTime(q.timestamp)}</span>
-              <span class="question-category" style="background:${catColor}">📂 ${q.category||'Umum'}</span>
-            </div>
-            <span class="question-status ${statusAnswered ? 'status-answered':'status-pending'}">
-              ${statusAnswered ? '✅ Sudah Dijawab' : '⏳ Menunggu Jawaban'}
-            </span>
-          </div>
+    const html = questions.map(q => `
+      <div class="question-item">
+        <div class="question-header">
+          <span class="question-author">👤 ${q.name || 'Penanya Anonim'}</span>
+          <span class="question-time">🕒 ${q.time || 'Waktu tidak diketahui'}</span>
+        </div>
+        <div class="question-text">${q.question || 'Pertanyaan tidak tersedia'}</div>
+        <div style="margin-top:.5rem;">
+          <span class="question-category" style="background:#2a5298;">📂 ${q.category || 'Umum'}</span>
+        </div>
+        ${q.answer ? `
+          <div class="answer">
+            <div class="answer-header">💡 Jawaban:</div>
+            <div class="answer-text">${q.answer}</div>
+          </div>` : ''}
+      </div>
+    `).join('');
 
-          <div class="question-text">💬 "${q.question||'-'}"</div>
-
-          <div class="answer-section">
-            ${statusAnswered ? `
-              <div class="current-answer">
-                <div class="answer-label">💡 Jawaban Saat Ini:</div>
-                <div>${q.answer}</div>
-              </div>` : ''}
-
-            <div class="answer-form">
-              <textarea class="answer-textarea" placeholder="Ketik jawaban untuk pertanyaan ini..." data-question-id="${q.row}">${q.answer||''}</textarea>
-              <button class="submit-answer-btn" onclick="submitAnswer(${q.row})">
-                ${statusAnswered ? '✏️ Update Jawaban' : '📤 Kirim Jawaban'}
-              </button>
-            </div>
-          </div>
-        </div>`;
-    }).join('');
-
-    container.innerHTML = html;
+    wrap.innerHTML = `<h4>💬 Pertanyaan & Jawaban Terbaru</h4>${srcInfo}${html}`;
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    loadQuestions();
-    setInterval(loadQuestions, 60000); // optional auto-refresh
-  });
+  // Parser hasil API v4 -> array objek
+  function mapRowsByHeader(values) {
+    // values[0] = header
+    const headers = values[0].map(h => (h || '').trim().toLowerCase());
+    const idx = {
+      timestamp: headers.indexOf('timestamp'),
+      name:      headers.indexOf('nama') > -1 ? headers.indexOf('nama') : headers.indexOf('name'),
+      question:  headers.indexOf('pertanyaan') > -1 ? headers.indexOf('pertanyaan') : headers.indexOf('question'),
+      category:  headers.indexOf('kategori') > -1 ? headers.indexOf('kategori') : headers.indexOf('category'),
+      answer:    headers.indexOf('jawaban') > -1 ? headers.indexOf('jawaban') : headers.indexOf('answer'),
+      email:     headers.indexOf('email')
+    };
+
+    const rows = values.slice(1);
+    return rows.map(r => ({
+      time:     idx.timestamp > -1 ? formatTime(r[idx.timestamp]) : null,
+      name:     idx.name > -1 ? (r[idx.name] || '').trim() : 'Penanya Anonim',
+      question: idx.question > -1 ? (r[idx.question] || '') : '',
+      category: idx.category > -1 ? (r[idx.category] || 'Umum') : 'Umum',
+      status:   idx.answer > -1 && r[idx.answer] ? 'answered' : 'pending',
+      answer:   idx.answer > -1 ? (r[idx.answer] || null) : null,
+      email:    idx.email > -1 ? (r[idx.email] || null) : null
+    })).reverse(); // terbaru dulu
+  }
+
+  // Fetch via Google Sheets API v4 (butuh API key, sheet publik viewer)
+  async function fetchViaV4() {
+    const rangeStr = encodeURIComponent(`${SHEET_NAME}!${RANGE}`);
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${rangeStr}?key=${API_KEY}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(`Sheets v4 error ${res.status}: ${text || res.statusText}`);
+    }
+    const data = await res.json();
+    if (!data.values || data.values.length === 0) return [];
+    return mapRowsByHeader(data.values);
+  }
+
+  // Fallback super-andal: endpoint publik gviz (tanpa API key)
+  async function fetchViaGviz() {
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(SHEET_NAME)}&tqx=out:json`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`GViz error ${res.status}`);
+    const txt = await res.text();
+    // GViz bungkus JSON dalam setResponse(...); ambil JSON‑nya
+    const jsonStr = txt.replace(/^[^{]+/, '').replace(/;?\s*$/,''); // buang wrapper sampai '{' pertama & ; di akhir
+    const obj = JSON.parse(jsonStr);
+    const cols = obj.table.cols.map(c => (c.label || '').trim().toLowerCase());
+    const rows = obj.table.rows || [];
+
+    // Cari indeks yang mirip
+    const idxMap = {
+      timestamp: cols.findIndex(c => c.includes('timestamp')),
+      name:      cols.findIndex(c => ['nama','name'].includes(c)),
+      question:  cols.findIndex(c => ['pertanyaan','question'].includes(c)),
+      category:  cols.findIndex(c => ['kategori','category'].includes(c)),
+      answer:    cols.findIndex(c => ['jawaban','answer'].includes(c)),
+      email:     cols.findIndex(c => c === 'email')
+    };
+
+    const out = rows.map(r => {
+      const cells = r.c || [];
+      const get = i => (i > -1 && cells[i] && cells[i].v != null) ? String(cells[i].v) : '';
+      const ts = get(idxMap.timestamp);
+      return {
+        time:     ts ? formatTime(ts) : null,
+        name:     get(idxMap.name) || 'Penanya Anonim',
+        question: get(idxMap.question),
+        category: get(idxMap.category) || 'Umum',
+        status:   get(idxMap.answer) ? 'answered' : 'pending',
+        answer:   get(idxMap.answer) || null,
+        email:    get(idxMap.email) || null
+      };
+    }).reverse();
+
+    return out;
+  }
+
+  // ====== PANGGIL UTAMA ======
+  async function loadQuestionsFromSheet() {
+    const loading = document.getElementById('loadingMessage');
+    if (loading) loading.style.display = 'block';
+
+    try {
+      // Coba API v4 dulu (sesuai permintaan: tetap pakai API key public)
+      const data = await fetchViaV4();
+      showConnectionStatus(true, '');
+      renderQuestions(data, true);
+    } catch (err) {
+      console.warn('Sheets v4 gagal, fallback ke gviz →', err);
+      try {
+        const data = await fetchViaGviz();
+        showConnectionStatus(false, 'Koneksi API v4 gagal');
+        renderQuestions(data, false);
+      } catch (err2) {
+        console.error('Fallback gviz juga gagal →', err2);
+        showConnectionStatus(false, 'Gagal memuat data (v4 & gviz)');
+        // Terakhir: tampilkan sample minimal biar halaman gak kosong
+        renderQuestions([{
+          name: 'Tim Admin',
+          question: 'Silakan ajukan pertanyaan Anda melalui form.',
+          category: 'Informasi',
+          time: 'Baru saja',
+          status: 'answered',
+          answer: 'Pertanyaan yang masuk akan tampil di sini setelah diproses.'
+        }], false);
+      }
+    }
+  }
+
+  // Inisialisasi
+  document.addEventListener('DOMContentLoaded', loadQuestionsFromSheet);
 </script>
+
 
 </body>
 
 </html>
+
