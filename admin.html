@@ -433,196 +433,220 @@
     </div>
 
     <script>
-        const SHEET_ID = '14gRlgi-XiDMPiaU-cga2FZE_n09NYIIFcTQo3xOskBU'; // ID Sheet
-const SHEET_NAME = 'Form Responses 1';
-const API_KEY = 'API_KEY_KAMU'; // sama seperti di index.html
-const SCRIPT_URL = 'PASTE_WEB_APP_URL_DISINI'; // dari Apps Script
-let questionsData = [];
+        // Configuration
+        const SHEET_ID = '14gRlgi-XiDMPiaU-cga2FZE_n09NYIIFcTQo3xOskBU';
+        
+        // Sample data for demonstration
+        let questionsData = [
+            {
+                id: 1,
+                timestamp: '2025/01/10 14:30:00',
+                name: 'Ibu Sari Wulandari',
+                email: 'sari@email.com',
+                category: 'Program KB',
+                question: 'Bagaimana cara mendaftarkan diri untuk mengikuti program KB di Kampung KB? Apakah ada syarat khusus yang harus dipenuhi?',
+                answer: '',
+                status: 'pending'
+            },
+            {
+                id: 2,
+                timestamp: '2025/01/10 10:15:00',
+                name: 'Bapak Ahmad Rizki',
+                email: 'ahmad@email.com',
+                category: 'Kegiatan Kampung KB',
+                question: 'Apa saja kegiatan rutin yang dilakukan di Kampung KB? Apakah ada jadwal yang bisa saya ikuti?',
+                answer: 'Kegiatan rutin meliputi: posyandu bulanan setiap tanggal 5, kelas ibu hamil setiap Rabu pagi, penyuluhan KB setiap Jumat sore, senam sehat keluarga setiap Minggu pagi di lapangan RT, dan konseling pranikah setiap Selasa. Jadwal lengkap bisa dilihat di papan pengumuman RT/RW atau hubungi kader KB setempat.',
+                status: 'answered'
+            },
+            {
+                id: 3,
+                timestamp: '2025/01/10 08:45:00',
+                name: 'Ibu Maya Sinta',
+                email: 'maya@email.com',
+                category: 'Layanan Kesehatan',
+                question: 'Apakah layanan konseling KB di Kampung KB gratis? Dan bagaimana prosedur untuk mendapatkan layanan tersebut?',
+                answer: 'Ya, semua layanan konseling KB di Kampung KB 100% gratis. Prosedurnya sangat mudah: 1) Datang ke pos KB terdekat dengan membawa KTP dan KK, 2) Isi formulir konseling, 3) Konsultasi dengan petugas KB yang tersertifikasi, 4) Dapatkan alat kontrasepsi gratis jika diperlukan. Buka setiap hari Senin-Jumat jam 08.00-15.00.',
+                status: 'answered'
+            }
+        ];
 
-  // ====== KONFIGURASI ======
-  const SHEET_ID   = '14gRlgi-XiDMPiaU-cga2FZE_n09NYIIFcTQo3xOskBU';
-  const API_KEY    = 'AIzaSyAoIM03NMmaPuKx4VuI40aWP0Ukoq-_HHA';
-  const SHEET_NAME = 'Form Responses 1';   // nama tab tepat (case-sensitive)
-  const RANGE      = 'A:E';                // sesuaikan kalau kolom melebar
+        // Category colors
+        const categoryColors = {
+            'umum': '#6c757d',
+            'program kb': '#007bff',
+            'kegiatan kampung kb': '#28a745', 
+            'layanan kesehatan': '#17a2b8',
+            'administrasi': '#fd7e14'
+        };
 
-  // Helper tampilkan status
-  function showConnectionStatus(isConnected, message) {
-    const el = document.getElementById('connectionStatus');
-    if (!el) return;
-    el.innerHTML = isConnected
-      ? '<div class="success-indicator">✅ Terhubung ke database - Data real time aktif</div>'
-      : `<div class="error-message">⚠️ ${message} - Menampilkan data contoh sementara</div>`;
-  }
+        // Format timestamp
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.floor(diffHours / 24);
 
-  // Format waktu simpel
-  function formatTime(ts) {
-    if (!ts) return 'Waktu tidak diketahui';
-    const now = new Date();
-    const t   = new Date(ts);
-    const diffH = Math.floor((now - t) / (1000 * 60 * 60));
-    const diffD = Math.floor(diffH / 24);
-    if (diffD > 0) return `${diffD} hari yang lalu`;
-    if (diffH > 0) return `${diffH} jam yang lalu`;
-    return 'Baru saja';
-  }
+            if (diffHours < 1) return 'Baru saja';
+            if (diffHours < 24) return `${diffHours} jam yang lalu`;
+            if (diffDays < 7) return `${diffDays} hari yang lalu`;
+            return date.toLocaleDateString('id-ID');
+        }
 
-  // Render ke UI (SESUIKAN dengan punyamu)
-  function renderQuestions(questions, isReal) {
-    const wrap = document.getElementById('questionsDisplay');
-    const loading = document.getElementById('loadingMessage');
-    if (loading) loading.style.display = 'none';
-    if (!wrap) return;
+        // Update statistics
+        function updateStats(data) {
+            const total = data.length;
+            const pending = data.filter(q => q.status === 'pending').length;
+            const answered = data.filter(q => q.status === 'answered').length;
+            
+            // Get today's questions
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            const todayCount = data.filter(q => {
+                const qDate = new Date(q.timestamp).toISOString().split('T')[0];
+                return qDate === todayStr;
+            }).length;
 
-    if (!questions || questions.length === 0) {
-      wrap.innerHTML = `
-        <h4>💬 Pertanyaan & Jawaban Terbaru</h4>
-        <div class="question-item"><p style="text-align:center;color:#666">Belum ada pertanyaan.</p></div>`;
-      return;
-    }
+            document.getElementById('totalQuestions').textContent = total;
+            document.getElementById('pendingQuestions').textContent = pending;
+            document.getElementById('answeredQuestions').textContent = answered;
+            document.getElementById('todayQuestions').textContent = todayCount;
+        }
 
-    const srcInfo = isReal
-      ? '<p style="text-align:center;color:#28a745;font-size:.9rem;margin-bottom:1rem;">📡 Data real-time dari Google Sheets</p>'
-      : '<p style="text-align:center;color:#ffc107;font-size:.9rem;margin-bottom:1rem;">⚠️ Menampilkan data contoh (fallback)</p>';
+        // Display questions
+        function displayQuestions(data) {
+            const container = document.getElementById('questionsList');
+            const loading = document.getElementById('loadingMessage');
 
-    const html = questions.map(q => `
-      <div class="question-item">
-        <div class="question-header">
-          <span class="question-author">👤 ${q.name || 'Penanya Anonim'}</span>
-          <span class="question-time">🕒 ${q.time || 'Waktu tidak diketahui'}</span>
-        </div>
-        <div class="question-text">${q.question || 'Pertanyaan tidak tersedia'}</div>
-        <div style="margin-top:.5rem;">
-          <span class="question-category" style="background:#2a5298;">📂 ${q.category || 'Umum'}</span>
-        </div>
-        ${q.answer ? `
-          <div class="answer">
-            <div class="answer-header">💡 Jawaban:</div>
-            <div class="answer-text">${q.answer}</div>
-          </div>` : ''}
-      </div>
-    `).join('');
+            if (data.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>📝 Belum Ada Pertanyaan</h3>
+                        <p>Pertanyaan dari pengguna akan muncul di sini</p>
+                    </div>
+                `;
+                return;
+            }
 
-    wrap.innerHTML = `<h4>💬 Pertanyaan & Jawaban Terbaru</h4>${srcInfo}${html}`;
-  }
+            // Sort by timestamp (newest first)
+            const sortedData = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-  // Parser hasil API v4 -> array objek
-  function mapRowsByHeader(values) {
-    // values[0] = header
-    const headers = values[0].map(h => (h || '').trim().toLowerCase());
-    const idx = {
-      timestamp: headers.indexOf('timestamp'),
-      name:      headers.indexOf('nama') > -1 ? headers.indexOf('nama') : headers.indexOf('name'),
-      question:  headers.indexOf('pertanyaan') > -1 ? headers.indexOf('pertanyaan') : headers.indexOf('question'),
-      category:  headers.indexOf('kategori') > -1 ? headers.indexOf('kategori') : headers.indexOf('category'),
-      answer:    headers.indexOf('jawaban') > -1 ? headers.indexOf('jawaban') : headers.indexOf('answer'),
-      email:     headers.indexOf('email')
-    };
+            const questionsHTML = sortedData.map(q => {
+                const categoryKey = q.category.toLowerCase();
+                const categoryColor = categoryColors[categoryKey] || categoryColors.umum;
+                
+                return `
+                    <div class="question-item ${q.status}" data-id="${q.id}">
+                        <div class="question-header">
+                            <div class="question-meta">
+                                <span class="author-name">👤 ${q.name}</span>
+                                <span class="question-time">🕒 ${formatTime(q.timestamp)}</span>
+                                <span class="question-category" style="background: ${categoryColor}">
+                                    📂 ${q.category}
+                                </span>
+                            </div>
+                            <span class="question-status ${q.status === 'answered' ? 'status-answered' : 'status-pending'}">
+                                ${q.status === 'answered' ? '✅ Sudah Dijawab' : '⏳ Menunggu Jawaban'}
+                            </span>
+                        </div>
+                        
+                        <div class="question-text">
+                            💬 "${q.question}"
+                        </div>
 
-    const rows = values.slice(1);
-    return rows.map(r => ({
-      time:     idx.timestamp > -1 ? formatTime(r[idx.timestamp]) : null,
-      name:     idx.name > -1 ? (r[idx.name] || '').trim() : 'Penanya Anonim',
-      question: idx.question > -1 ? (r[idx.question] || '') : '',
-      category: idx.category > -1 ? (r[idx.category] || 'Umum') : 'Umum',
-      status:   idx.answer > -1 && r[idx.answer] ? 'answered' : 'pending',
-      answer:   idx.answer > -1 ? (r[idx.answer] || null) : null,
-      email:    idx.email > -1 ? (r[idx.email] || null) : null
-    })).reverse(); // terbaru dulu
-  }
+                        <div class="answer-section">
+                            ${q.answer ? `
+                                <div class="current-answer">
+                                    <div class="answer-label">💡 Jawaban Anda:</div>
+                                    <div>${q.answer}</div>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="answer-form">
+                                <textarea 
+                                    class="answer-textarea" 
+                                    placeholder="Ketik jawaban untuk pertanyaan ini..."
+                                    data-question-id="${q.id}"
+                                >${q.answer || ''}</textarea>
+                                <button 
+                                    class="submit-answer-btn" 
+                                    onclick="submitAnswer(${q.id})"
+                                    ${q.status === 'answered' ? '' : ''}
+                                >
+                                    ${q.answer ? '✏️ Update Jawaban' : '📤 Kirim Jawaban'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
 
-  // Fetch via Google Sheets API v4 (butuh API key, sheet publik viewer)
-  async function fetchViaV4() {
-    const rangeStr = encodeURIComponent(`${SHEET_NAME}!${RANGE}`);
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${rangeStr}?key=${API_KEY}`;
-    const res = await fetch(url);
-    if (!res.ok) {
-      const text = await res.text().catch(() => '');
-      throw new Error(`Sheets v4 error ${res.status}: ${text || res.statusText}`);
-    }
-    const data = await res.json();
-    if (!data.values || data.values.length === 0) return [];
-    return mapRowsByHeader(data.values);
-  }
+            container.innerHTML = questionsHTML;
+            loading.style.display = 'none';
+        }
 
-  // Fallback super-andal: endpoint publik gviz (tanpa API key)
-  async function fetchViaGviz() {
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(SHEET_NAME)}&tqx=out:json`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`GViz error ${res.status}`);
-    const txt = await res.text();
-    // GViz bungkus JSON dalam setResponse(...); ambil JSON‑nya
-    const jsonStr = txt.replace(/^[^{]+/, '').replace(/;?\s*$/,''); // buang wrapper sampai '{' pertama & ; di akhir
-    const obj = JSON.parse(jsonStr);
-    const cols = obj.table.cols.map(c => (c.label || '').trim().toLowerCase());
-    const rows = obj.table.rows || [];
+        // Submit answer
+        async function submitAnswer(questionId) {
+  const q = questionsData.find(x => x.id === questionId);
+  const textarea = document.querySelector(`[data-question-id="${questionId}"]`);
+  const answer = (textarea?.value || '').trim();
+  if (!answer) return alert('Silakan masukkan jawaban terlebih dahulu');
 
-    // Cari indeks yang mirip
-    const idxMap = {
-      timestamp: cols.findIndex(c => c.includes('timestamp')),
-      name:      cols.findIndex(c => ['nama','name'].includes(c)),
-      question:  cols.findIndex(c => ['pertanyaan','question'].includes(c)),
-      category:  cols.findIndex(c => ['kategori','category'].includes(c)),
-      answer:    cols.findIndex(c => ['jawaban','answer'].includes(c)),
-      email:     cols.findIndex(c => c === 'email')
-    };
+  const res = await fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ rowNumber: q.rowNumber, answer })
+  });
+  const result = await res.json();
+  if (!result.ok) throw new Error(result.error || 'Gagal menyimpan');
 
-    const out = rows.map(r => {
-      const cells = r.c || [];
-      const get = i => (i > -1 && cells[i] && cells[i].v != null) ? String(cells[i].v) : '';
-      const ts = get(idxMap.timestamp);
-      return {
-        time:     ts ? formatTime(ts) : null,
-        name:     get(idxMap.name) || 'Penanya Anonim',
-        question: get(idxMap.question),
-        category: get(idxMap.category) || 'Umum',
-        status:   get(idxMap.answer) ? 'answered' : 'pending',
-        answer:   get(idxMap.answer) || null,
-        email:    get(idxMap.email) || null
-      };
-    }).reverse();
-
-    return out;
-  }
-
-  // ====== PANGGIL UTAMA ======
-  async function loadQuestionsFromSheet() {
-    const loading = document.getElementById('loadingMessage');
-    if (loading) loading.style.display = 'block';
-
-    try {
-      // Coba API v4 dulu (sesuai permintaan: tetap pakai API key public)
-      const data = await fetchViaV4();
-      showConnectionStatus(true, '');
-      renderQuestions(data, true);
-    } catch (err) {
-      console.warn('Sheets v4 gagal, fallback ke gviz →', err);
-      try {
-        const data = await fetchViaGviz();
-        showConnectionStatus(false, 'Koneksi API v4 gagal');
-        renderQuestions(data, false);
-      } catch (err2) {
-        console.error('Fallback gviz juga gagal →', err2);
-        showConnectionStatus(false, 'Gagal memuat data (v4 & gviz)');
-        // Terakhir: tampilkan sample minimal biar halaman gak kosong
-        renderQuestions([{
-          name: 'Tim Admin',
-          question: 'Silakan ajukan pertanyaan Anda melalui form.',
-          category: 'Informasi',
-          time: 'Baru saja',
-          status: 'answered',
-          answer: 'Pertanyaan yang masuk akan tampil di sini setelah diproses.'
-        }], false);
-      }
-    }
-  }
-
-  // Inisialisasi
-  document.addEventListener('DOMContentLoaded', loadQuestionsFromSheet);
-</script>
+  await loadQuestions();
+  const successMsg = document.getElementById('successMessage');
+  successMsg.style.display = 'block';
+  setTimeout(() => successMsg.style.display = 'none', 3000);
+}
 
 
+        // Load questions from Google Sheets
+        async function loadQuestions() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+
+  const rows = (data.values || []).slice(1); // skip header
+  questionsData = rows.map((row, i) => ({
+    id: i + 1,
+    rowNumber: i + 2,
+    timestamp: row[0] || '',
+    name: row[1] || 'Penanya Anonim',
+    question: row[2] || '',
+    category: row[3] || 'Umum',
+    answer: row[4] || '',
+    status: row[4] ? 'answered' : 'pending'
+  }));
+
+  displayQuestions(questionsData);
+  updateStats(questionsData);
+}
+
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQuestions();
+            
+            // Auto-refresh every 60 seconds
+            setInterval(loadQuestions, 60000);
+        });
+
+        // Add some interactive features
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+R to refresh
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                loadQuestions();
+            }
+        });
+    </script>
 </body>
-
 </html>
-
-
