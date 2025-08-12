@@ -5,12 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QnA Kampung KB - Tanya Jawab Seputar Kampung Keluarga Berencana</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -18,12 +13,7 @@
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
         /* Header */
         header {
@@ -32,314 +22,103 @@
             padding: 1rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
+        .header-content { display: flex; justify-content: center; align-items: center; text-align: center; }
+        .logo { color: white; }
+        .logo h1 { font-size: 1.8rem; font-weight: bold; margin-bottom: 0.2rem; }
+        .logo p { font-size: 0.9rem; opacity: 0.9; }
 
-        .header-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
+        /* Hero */
+        .hero { padding: 60px 0 40px; text-align: center; color: white; }
+        .hero h2 { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0; animation: fadeInUp 1s ease forwards; }
+        .hero p { font-size: 1.2rem; margin-bottom: 2rem; opacity: 0; animation: fadeInUp 1s ease 0.3s forwards; max-width: 600px; margin-left: auto; margin-right: auto; }
 
-        .logo {
-            color: white;
-        }
+        /* Section */
+        .qna-section { padding: 60px 0; background: rgba(255, 255, 255, 0.95); color: #333; border-radius: 20px 20px 0 0; }
+        .qna-container { max-width: 900px; margin: 0 auto; }
+        .qna-section h3 { font-size: 2rem; margin-bottom: 2rem; text-align: center; color: #1e3c72; }
 
-        .logo h1 {
-            font-size: 1.8rem;
-            font-weight: bold;
-            margin-bottom: 0.2rem;
-        }
+        /* Form block */
+        .form-container { background: white; padding: 2rem; border-radius: 15px; margin-bottom: 3rem; box-shadow: 0 10px 30px rgba(30, 60, 114, 0.1); border: 2px solid #e3f2fd; text-align: center; }
+        .form-info { background: #e3f2fd; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; color: #1e3c72; }
+        .form-button { display: inline-block; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 50px; font-size: 1.1rem; font-weight: bold; margin: 1rem 0; transition: all 0.3s; }
+        .form-button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(30, 60, 114, 0.3); text-decoration: none; color: white; }
 
-        .logo p {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
+        /* NEW: QnA Card styles */
+        .questions-display { margin-top: 3rem; }
+        .questions-display h4 { color: #1e3c72; font-size: 1.5rem; margin-bottom: 1.2rem; text-align: center; }
 
-        /* Hero Section */
-        .hero {
-            padding: 60px 0 40px;
-            text-align: center;
-            color: white;
-        }
-
-        .hero h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            opacity: 0;
-            animation: fadeInUp 1s ease forwards;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0;
-            animation: fadeInUp 1s ease 0.3s forwards;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* QnA Section */
-        .qna-section {
-            padding: 60px 0;
-            background: rgba(255, 255, 255, 0.95);
-            color: #333;
-            border-radius: 20px 20px 0 0;
-        }
-
-        .qna-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .qna-section h3 {
-            font-size: 2rem;
-            margin-bottom: 2rem;
-            text-align: center;
-            color: #1e3c72;
-        }
-
-        /* Google Form Embed */
-        .form-container {
+        .q-card {
             background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            margin-bottom: 3rem;
-            box-shadow: 0 10px 30px rgba(30, 60, 114, 0.1);
-            border: 2px solid #e3f2fd;
-            text-align: center;
-        }
-
-        .form-embed {
-            width: 100%;
-            height: 600px;
-            border: none;
-            border-radius: 10px;
-        }
-
-        .form-info {
-            background: #e3f2fd;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            color: #1e3c72;
-        }
-
-        .form-info strong {
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Alternative Form Button */
-        .form-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            padding: 15px 30px;
-            text-decoration: none;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin: 1rem 0;
-            transition: all 0.3s;
-        }
-
-        .form-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(30, 60, 114, 0.3);
-            text-decoration: none;
-            color: white;
-        }
-
-        /* Questions Display */
-        .questions-display {
-            margin-top: 3rem;
-        }
-
-        .questions-display h4 {
-            color: #1e3c72;
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .question-item {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.1);
-            border-left: 4px solid #2a5298;
-            transition: all 0.3s;
-        }
-
-        .question-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(30, 60, 114, 0.15);
-        }
-
-        .question-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.8rem;
-        }
-
-        .question-author {
-            font-weight: bold;
-            color: #1e3c72;
-            font-size: 0.95rem;
-        }
-
-        .question-time {
-            font-size: 0.8rem;
-            color: #666;
-            background: #f0f8ff;
-            padding: 2px 8px;
-            border-radius: 12px;
-        }
-
-        .question-text {
-            line-height: 1.6;
-            color: #444;
+            border-radius: 16px;
+            box-shadow: 0 6px 18px rgba(30,60,114,0.12);
+            border-left: 5px solid #2a5298;
+            padding: 1.25rem 1.25rem 1rem;
             margin-bottom: 1rem;
         }
+        .q-head {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: start;
+            gap: .75rem;
+            margin-bottom: .75rem;
+        }
+        .q-ident {
+            display: grid;
+            grid-auto-flow: row;
+            gap: .25rem;
+        }
+        .q-name { font-weight: 700; color: #1e3c72; display: inline-flex; gap:.5rem; align-items: center; }
+        .q-email { font-size: .9rem; color: #6b7280; }
+        .q-right {
+            display: inline-flex; gap:.5rem; align-items: center; justify-self: end;
+        }
+        .badge {
+            display: inline-flex; align-items: center; gap:.4rem;
+            background: #2a5298; color: #fff; border-radius: 999px;
+            font-size: .8rem; padding: .35rem .7rem; font-weight: 600;
+        }
+        .time-chip {
+            background: #eef2ff; color: #374151; border-radius: 999px;
+            font-size: .8rem; padding: .35rem .6rem; display: inline-flex; gap:.35rem; align-items: center;
+        }
 
-        .question-category {
-            display: inline-block;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            padding: 2px 10px;
+        .q-block {
+            background: #f8fafc;
+            border: 1px solid #e5f6ea;
+            border-left: 4px solid #4caf50;
             border-radius: 12px;
-            font-size: 0.75rem;
-            margin-right: 0.5rem;
+            padding: .75rem .9rem;
         }
-
-        .question-status {
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 0.75rem;
+        .q-block-title {
+            font-weight: 700; color: #16a34a; display: inline-flex; align-items: center; gap:.5rem;
+            margin-bottom: .35rem; font-size: .95rem;
         }
+        .q-text { color: #374151; white-space: pre-wrap; }
 
-        .status-answered {
-            background: #4caf50;
-            color: white;
-        }
-
-        .status-pending {
-            background: #ff9800;
-            color: white;
-        }
-
+        /* Old answer block kept for compatibility */
         .answer {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-            border-left: 3px solid #4caf50;
+            background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-top: 1rem; border-left: 3px solid #4caf50;
         }
+        .answer-header { font-weight: bold; color: #4caf50; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .answer-text { color: #555; line-height: 1.6; }
 
-        .answer-header {
-            font-weight: bold;
-            color: #4caf50;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .answer-text {
-            color: #555;
-            line-height: 1.6;
-        }
-
-        /* Error handling */
-        .error-message {
-            background: #fff3cd;
-            color: #856404;
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-            border: 1px solid #ffeaa7;
-        }
-
-        .success-indicator {
-            background: #d4edda;
-            color: #155724;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            margin: 0.5rem 0;
-            font-size: 0.9rem;
-            display: inline-block;
-        }
-
-        /* Footer */
-        footer {
-            background: #1e3c72;
-            color: white;
-            text-align: center;
-            padding: 2rem 0;
-        }
-
-        .footer-content {
-            max-width: 600px;
-            margin: 0 auto;
-        }
+        /* Status & loading */
+        .error-message { background: #fff3cd; color: #856404; padding: 1rem; border-radius: 8px; margin: 1rem 0; border: 1px solid #ffeaa7; }
+        .success-indicator { background: #d4edda; color: #155724; padding: 0.5rem 1rem; border-radius: 6px; margin: 0.5rem 0; font-size: 0.9rem; display: inline-block; }
+        .loading { text-align: center; padding: 2rem; color: #666; }
+        .loading::after { content: "..."; animation: dots 2s infinite; }
+        @keyframes dots { 0%{content:""} 25%{content:"."} 50%{content:".."} 75%{content:"..."} 100%{content:""} }
 
         /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Loading animation */
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: #666;
-        }
-
-        .loading::after {
-            content: "...";
-            animation: dots 2s infinite;
-        }
-
-        @keyframes dots {
-            0% { content: ""; }
-            25% { content: "."; }
-            50% { content: ".."; }
-            75% { content: "..."; }
-            100% { content: ""; }
-        }
+        @keyframes fadeInUp { from { opacity:0; transform: translateY(30px);} to {opacity:1; transform: translateY(0);} }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .hero h2 {
-                font-size: 2rem;
-            }
-            
-            .hero p {
-                font-size: 1rem;
-            }
-            
-            .form-container {
-                padding: 1.5rem;
-            }
-            
-            .form-embed {
-                height: 500px;
-            }
-            
-            .question-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
+            .hero h2 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            .form-container { padding: 1.5rem; }
+            .q-head { grid-template-columns: 1fr; }
+            .q-right { justify-self: start; }
         }
     </style>
 </head>
@@ -356,7 +135,7 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
+    <!-- Hero -->
     <section class="hero">
         <div class="container">
             <h2>Punya Pertanyaan tentang Kampung KB?</h2>
@@ -369,18 +148,17 @@
         <div class="container">
             <div class="qna-container">
                 <h3>📝 Ajukan Pertanyaan Anda</h3>
-                
+
                 <div class="form-container">
                     <div class="form-info">
                         <strong>💡 Cara menggunakan:</strong>
                         Isi form di bawah ini untuk mengajukan pertanyaan. Pertanyaan Anda akan dijawab oleh tim ahli dalam waktu 1x24 jam.
                     </div>
-                    
-                    <!-- Direct Link to Google Form -->
+
                     <div style="text-align: center; padding: 2rem;">
                         <h4 style="margin-bottom: 1rem; color: #1e3c72;">📝 Klik tombol di bawah untuk mengajukan pertanyaan:</h4>
-                        <a href="https://docs.google.com/forms/d/1sB52cuwKDKzmT6GiZqJMKKvSYcQYaQOmXJiu-tZDRqM/viewform" 
-                           target="_blank" 
+                        <a href="https://docs.google.com/forms/d/1sB52cuwKDKzmT6GiZqJMKKvSYcQYaQOmXJiu-tZDRqM/viewform"
+                           target="_blank"
                            class="form-button"
                            style="display: inline-block; font-size: 1.2rem; padding: 20px 40px;">
                            📋 Ajukan Pertanyaan Sekarang
@@ -390,10 +168,7 @@
                         </p>
                     </div>
 
-                    <!-- Connection Status -->
                     <div id="connectionStatus"></div>
-                    
-
                 </div>
 
                 <div class="questions-display" id="questionsDisplay">
@@ -405,9 +180,9 @@
     </section>
 
     <!-- Footer -->
-    <footer>
+    <footer style="background:#1e3c72;color:#fff;text-align:center;padding:2rem 0;">
         <div class="container">
-            <div class="footer-content">
+            <div class="footer-content" style="max-width:600px;margin:0 auto;">
                 <p><strong>QnA Kampung KB</strong></p>
                 <p>Platform tanya jawab untuk mendukung program Kampung Keluarga Berencana</p>
                 <p style="margin-top: 1rem; opacity: 0.8;">&copy; 2025 - Pertanyaan akan dijawab dalam 1x24 jam</p>
@@ -416,15 +191,16 @@
     </footer>
 
     <script>
-        // Google Sheets API configuration
+        // === CONFIG: Google Sheets API ===
         const SHEET_ID = '14gRlgi-XiDMPiaU-cga2FZE_n09NYIIFcTQo3xOskBU';
-        const API_KEY = 'AIzaSyAoIM03NMmaPuKx4VuI40aWP0Ukoq-_HHA';
-        const SHEET_NAME = 'Form Responses 1'; // This is the default name for Google Forms responses
-        
-        // Sample data as fallback (minimal)
-        let sampleQuestions = [
+        const API_KEY  = 'AIzaSyAoIM03NMmaPuKx4VuI40aWP0Ukoq-_HHA';
+        const SHEET_NAME = 'Form Responses 1';
+
+        // === FALLBACK SAMPLE ===
+        const sampleQuestions = [
             {
                 name: "Tim Admin",
+                email: "admin@kampungkb.example",
                 question: "Selamat datang! Silakan ajukan pertanyaan Anda melalui form di atas.",
                 category: "Informasi",
                 time: "Baru saja",
@@ -433,191 +209,157 @@
             }
         ];
 
-        // Category colors
+        // === COLORS ===
         const categoryColors = {
             'umum': '#6c757d',
-            'program kb': '#007bff', 
+            'program kb': '#007bff',
             'kegiatan kampung kb': '#28a745',
             'layanan kesehatan': '#17a2b8',
             'administrasi': '#fd7e14'
         };
 
-        // Time formatting function
+        // === UTILS ===
         function formatTime(timestamp) {
             if (!timestamp) return 'Waktu tidak diketahui';
-            
             const now = new Date();
             const time = new Date(timestamp);
             const diffMs = now - time;
             const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
             const diffDays = Math.floor(diffHours / 24);
-            
-            if (diffDays > 0) {
-                return `${diffDays} hari yang lalu`;
-            } else if (diffHours > 0) {
-                return `${diffHours} jam yang lalu`;
-            } else {
-                return 'Baru saja';
-            }
+            if (diffDays > 0) return `${diffDays} hari yang lalu`;
+            if (diffHours > 0) return `${diffHours} jam yang lalu`;
+            return 'Baru saja';
         }
 
-        // Display connection status
         function showConnectionStatus(isConnected, message) {
-            const statusDiv = document.getElementById('connectionStatus');
-            if (isConnected) {
-                statusDiv.innerHTML = `
-                    <div class="success-indicator">
-                        ✅ Terhubung ke database - Data real time aktif
-                    </div>
-                `;
-            } else {
-                statusDiv.innerHTML = `
-                    <div class="error-message">
-                        ⚠️ ${message} - Menampilkan data contoh sementara
-                    </div>
-                `;
-            }
+            const el = document.getElementById('connectionStatus');
+            el.innerHTML = isConnected
+                ? `<div class="success-indicator">✅ Terhubung ke database - Data real time aktif</div>`
+                : `<div class="error-message">⚠️ ${message} - Menampilkan data contoh sementara</div>`;
         }
 
-        // Display questions function
-        function displayQuestions(questions = sampleQuestions, isRealData = false) {
-            const questionsContainer = document.getElementById('questionsDisplay');
-            const loadingMessage = document.getElementById('loadingMessage');
-            
-            if (questions.length === 0) {
-                questionsContainer.innerHTML = `
+        // === RENDER ===
+        function renderCards(items = sampleQuestions, real = false) {
+            const wrap = document.getElementById('questionsDisplay');
+            const loading = document.getElementById('loadingMessage');
+
+            if (!items.length) {
+                wrap.innerHTML = `
                     <h4>💬 Pertanyaan & Jawaban Terbaru</h4>
-                    <div class="question-item">
-                        <p style="text-align: center; color: #666;">Belum ada pertanyaan. Jadilah yang pertama bertanya!</p>
-                    </div>
+                    <div class="q-card"><p style="text-align:center;color:#666;">Belum ada pertanyaan. Jadilah yang pertama bertanya!</p></div>
                 `;
                 return;
             }
 
-            const dataSourceInfo = isRealData ? 
-                '<p style="text-align: center; color: #28a745; font-size: 0.9rem; margin-bottom: 1rem;">📡 Data real-time dari Google Sheets</p>' :
-                '<p style="text-align: center; color: #ffc107; font-size: 0.9rem; margin-bottom: 1rem;">⚠️ Menampilkan data contoh (koneksi database bermasalah)</p>';
+            const info = real
+                ? `<p style="text-align:center;color:#28a745;font-size:.9rem;margin-bottom:.75rem;">📡 Data real-time dari Google Sheets</p>`
+                : `<p style="text-align:center;color:#ffc107;font-size:.9rem;margin-bottom:.75rem;">⚠️ Menampilkan data contoh (koneksi database bermasalah)</p>`;
 
-            const questionsHTML = questions.map(q => {
-                const categoryKey = q.category ? q.category.toLowerCase() : 'umum';
-                const categoryColor = categoryColors[categoryKey] || categoryColors.umum;
-                
+            const html = items.map(q => {
+                const categoryKey = (q.category || 'Umum').toLowerCase();
+                const catColor = categoryColors[categoryKey] || categoryColors.umum;
+                const email = q.email ? `<div class="q-email">${q.email}</div>` : '';
+                const time = q.time || 'Waktu tidak diketahui';
+
                 return `
-                    <div class="question-item">
-                        <div class="question-header">
-                            <span class="question-author">👤 ${q.name || 'Penanya Anonim'}</span>
-                            <span class="question-time">🕒 ${q.time || 'Waktu tidak diketahui'}</span>
+                <div class="q-card">
+                    <div class="q-head">
+                        <div class="q-ident">
+                            <div class="q-name">👤 ${q.name || 'Penanya Anonim'}</div>
+                            ${email}
                         </div>
-                        <div class="question-text">${q.question || 'Pertanyaan tidak tersedia'}</div>
-                        <div style="margin-top: 0.5rem;">
-                            <span class="question-category" style="background: ${categoryColor};">
-                                📂 ${q.category || 'Umum'}
-                            </span>
+                        <div class="q-right">
+                            <span class="badge" style="background:${catColor}">📂 ${q.category || 'Umum'}</span>
+                            <span class="time-chip">🕒 ${time}</span>
                         </div>
-                        ${q.answer ? `
-                            <div class="answer">
-                                <div class="answer-header">❓ Pertanyaan yang ditanyakan:</div>
-                                <div class="answer-text">${q.answer}</div>
-                            </div>
-                        ` : ''}
                     </div>
-                `;
+
+                    <div class="q-block">
+                        <div class="q-block-title">❓ Pertanyaan yang ditanyakan:</div>
+                        <div class="q-text">${q.question || '-'}</div>
+                    </div>
+
+                    ${q.answer ? `
+                        <div class="answer">
+                            <div class="answer-header">💡 Jawaban:</div>
+                            <div class="answer-text">${q.answer}</div>
+                        </div>` : ``}
+                </div>`;
             }).join('');
-            
-            questionsContainer.innerHTML = `
-                <h4>💬 Pertanyaan & Jawaban Terbaru</h4>
-                ${dataSourceInfo}
-                ${questionsHTML}
-            `;
-            loadingMessage.style.display = 'none';
+
+            wrap.innerHTML = `<h4>💬 Pertanyaan & Jawaban Terbaru</h4>${info}${html}`;
+            if (loading) loading.style.display = 'none';
         }
 
-        // Load data from Google Sheets
+        // === LOAD FROM SHEETS (header-aware) ===
         async function loadQuestionsFromSheet() {
             try {
-                console.log('🔄 Attempting to fetch data from Google Sheets...');
-                
-                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
-                
-                const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                console.log('📊 Raw data from Google Sheets:', data);
-                
-                if (data.values && data.values.length > 1) {
-                    // Process real data from Google Sheets
-                    const headers = data.values[0]; // First row contains headers
-                    const rows = data.values.slice(1); // Skip header row
-                    
-                    console.log('📝 Headers:', headers);
-                    console.log('📋 Rows count:', rows.length);
-                    
-                    // Map the data (adjust column indices based on your Google Form structure)
-                    const questionsData = rows.map((row, index) => {
-                        return {
-                            name: row[1] || 'Penanya Anonim', // Column B: Nama
-                            question: row[2] || 'Pertanyaan tidak tersedia', // Column C: Pertanyaan
-                            category: row[3] || 'Umum', // Column D: Kategori
-                            time: formatTime(row[0]), // Column A: Timestamp
-                            status: row[4] ? 'answered' : 'pending', // Column E: Jawaban (if exists)
-                            answer: row[4] || null // Column E: Jawaban
-                        };
-                    }).reverse(); // Show newest first
-                    
-                    console.log('✅ Processed questions:', questionsData);
-                    showConnectionStatus(true, '');
-                    displayQuestions(questionsData, true);
-                    
-                } else {
-                    console.log('⚠️ No data found in spreadsheet');
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                const data = await res.json();
+
+                if (!data.values || data.values.length < 2) {
                     showConnectionStatus(false, 'Belum ada data di spreadsheet');
-                    displayQuestions(sampleQuestions, false);
+                    renderCards(sampleQuestions, false);
+                    return;
                 }
-                
-            } catch (error) {
-                console.error('❌ Error loading questions:', error);
-                let errorMessage = 'Gagal memuat data';
-                
-                if (error.message.includes('403')) {
-                    errorMessage = 'Akses ditolak - Periksa pengaturan berbagi spreadsheet';
-                } else if (error.message.includes('404')) {
-                    errorMessage = 'Spreadsheet tidak ditemukan';
-                } else if (error.message.includes('400')) {
-                    errorMessage = 'Format permintaan salah';
-                }
-                
-                showConnectionStatus(false, errorMessage);
-                displayQuestions(sampleQuestions, false);
+
+                const headers = data.values[0].map(h => (h || '').toString().trim().toLowerCase());
+                const rows = data.values.slice(1);
+
+                // cari index kolom berdasar judul
+                const findIdx = (names) => {
+                    const list = Array.isArray(names) ? names : [names];
+                    for (const n of list) {
+                        const i = headers.indexOf(n);
+                        if (i !== -1) return i;
+                    }
+                    return -1;
+                };
+
+                const iTimestamp = 0; // biasanya timestamp di kolom A
+                const iNama      = findIdx(['nama', 'name', 'your name', 'nama lengkap']);
+                const iEmail     = findIdx(['email', 'alamat email', 'e-mail', 'email address']);
+                const iKategori  = findIdx(['kategori', 'category']);
+                const iTanya     = findIdx(['pertanyaan', 'question', 'pesan', 'message']);
+                const iJawab     = findIdx(['jawaban', 'answer']);
+
+                const mapped = rows.map(r => ({
+                    name: (iNama >= 0 ? r[iNama] : r[1]) || 'Penanya Anonim',
+                    email: (iEmail >= 0 ? r[iEmail] : ''),
+                    category: (iKategori >= 0 ? r[iKategori] : (r[3] || 'Umum')),
+                    question: (iTanya >= 0 ? r[iTanya] : r[2]) || '-',
+                    answer: (iJawab >= 0 ? r[iJawab] : r[4]) || '',
+                    time: formatTime(r[iTimestamp])
+                })).reverse();
+
+                showConnectionStatus(true, '');
+                renderCards(mapped, true);
+
+            } catch (err) {
+                let msg = 'Gagal memuat data';
+                if (String(err).includes('403')) msg = 'Akses ditolak - Periksa sharing Google Sheet (Anyone with the link: Viewer)';
+                else if (String(err).includes('404')) msg = 'Spreadsheet tidak ditemukan';
+                else if (String(err).includes('400')) msg = 'Format permintaan salah';
+                showConnectionStatus(false, msg);
+                renderCards(sampleQuestions, false);
+                console.error(err);
             }
         }
 
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Page loaded, initializing...');
+        document.addEventListener('DOMContentLoaded', () => {
             loadQuestionsFromSheet();
-            
-            // Manual refresh button instead of auto-refresh
-            // Auto-refresh disabled to prevent API quota issues
-            // setInterval(() => {
-            //     console.log('🔄 Auto-refreshing data...');
-            //     loadQuestionsFromSheet();
-            // }, 30000);
+            // OPTIONAL: auto-refresh (hemat kuota, jadi off)
+            // setInterval(loadQuestionsFromSheet, 60000);
         });
 
-        // Smooth scroll for better UX
+        // Smooth anchor scroll
         document.addEventListener('click', function(e) {
             if (e.target.matches('a[href^="#"]')) {
                 e.preventDefault();
                 const target = document.querySelector(e.target.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                }
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
             }
         });
     </script>
