@@ -191,177 +191,178 @@
     </footer>
 
     <script>
-        // === CONFIG: Google Sheets API ===
-        const SHEET_ID = '14gRlgi-XiDMPiaU-cga2FZE_n09NYIIFcTQo3xOskBU';
-        const API_KEY  = 'AIzaSyAoIM03NMmaPuKx4VuI40aWP0Ukoq-_HHA';
-        const SHEET_NAME = 'Form Responses 1';
+  // === CONFIG: Google Sheets API ===
+  const SHEET_ID = '14gRlgi-XiDMPiaU-cga2FZE_n09NYIIFcTQo3xOskBU';
+  const API_KEY  = 'AIzaSyAoIM03NMmaPuKx4VuI40aWP0Ukoq-_HHA';
+  const SHEET_NAME = 'Form Responses 1';
 
-        // === FALLBACK SAMPLE ===
-        const sampleQuestions = [
-            {
-                name: "Tim Admin",
-                email: "admin@kampungkb.example",
-                question: "Selamat datang! Silakan ajukan pertanyaan Anda melalui form di atas.",
-                category: "Informasi",
-                time: "Baru saja",
-                status: "answered",
-                answer: "Pertanyaan yang Anda kirim melalui Google Form akan muncul di sini setelah diproses oleh tim kami."
-            }
-        ];
+  // === FALLBACK SAMPLE ===
+  const sampleQuestions = [
+    {
+      name: "Tim Admin",
+      email: "admin@example.com",
+      question: "Selamat datang! Silakan ajukan pertanyaan Anda melalui form di atas.",
+      category: "Informasi",
+      time: "Baru saja",
+      status: "answered",
+      answer: "Pertanyaan yang Anda kirim melalui Google Form akan muncul di sini setelah diproses oleh tim kami."
+    }
+  ];
 
-        // === COLORS ===
-        const categoryColors = {
-            'umum': '#6c757d',
-            'program kb': '#007bff',
-            'kegiatan kampung kb': '#28a745',
-            'layanan kesehatan': '#17a2b8',
-            'administrasi': '#fd7e14'
-        };
+  // Category colors
+  const categoryColors = {
+    'umum': '#6c757d',
+    'program kb': '#007bff',
+    'kegiatan kampung kb': '#28a745',
+    'layanan kesehatan': '#17a2b8',
+    'administrasi': '#fd7e14'
+  };
 
-        // === UTILS ===
-        function formatTime(timestamp) {
-            if (!timestamp) return 'Waktu tidak diketahui';
-            const now = new Date();
-            const time = new Date(timestamp);
-            const diffMs = now - time;
-            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-            const diffDays = Math.floor(diffHours / 24);
-            if (diffDays > 0) return `${diffDays} hari yang lalu`;
-            if (diffHours > 0) return `${diffHours} jam yang lalu`;
-            return 'Baru saja';
+  // Utils
+  function formatTime(timestamp) {
+    if (!timestamp) return 'Waktu tidak diketahui';
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffMs = now - time;
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays > 0) return `${diffDays} hari yang lalu`;
+    if (diffHours > 0) return `${diffHours} jam yang lalu`;
+    return 'Baru saja';
+  }
+
+  function showConnectionStatus(isConnected, message) {
+    const el = document.getElementById('connectionStatus');
+    el.innerHTML = isConnected
+      ? `<div class="success-indicator">✅ Terhubung ke database - Data real time aktif</div>`
+      : `<div class="error-message">⚠️ ${message} - Menampilkan data contoh sementara</div>`;
+  }
+
+  // RENDER
+  function displayQuestions(questions = sampleQuestions, isRealData = false) {
+    const container = document.getElementById('questionsDisplay');
+    const loadingMessage = document.getElementById('loadingMessage');
+
+    if (!questions.length) {
+      container.innerHTML = `
+        <h4>💬 Pertanyaan & Jawaban Terbaru</h4>
+        <div class="question-item">
+          <p style="text-align:center;color:#666;">Belum ada pertanyaan. Jadilah yang pertama bertanya!</p>
+        </div>`;
+      return;
+    }
+
+    const dataSourceInfo = isRealData
+      ? '<p style="text-align:center;color:#28a745;font-size:.9rem;margin-bottom:1rem;">📡 Data real-time dari Google Sheets</p>'
+      : '<p style="text-align:center;color:#ffc107;font-size:.9rem;margin-bottom:1rem;">⚠️ Menampilkan data contoh (koneksi database bermasalah)</p>';
+
+    const html = questions.map(q => {
+      const categoryKey = (q.category || 'Umum').toLowerCase();
+      const categoryColor = categoryColors[categoryKey] || categoryColors.umum;
+
+      return `
+        <div class="question-item">
+          <div class="question-header" style="align-items:flex-start;">
+            <div>
+              <div class="question-author">👤 ${q.name || 'Penanya Anonim'}</div>
+              ${q.email ? `<div style="font-size:.9rem;color:#6b7280;margin-top:2px;">✉️ ${q.email}</div>` : ``}
+            </div>
+            <div style="display:flex;gap:.5rem;align-items:center;">
+              <span class="question-category" style="background:${categoryColor};">📂 ${q.category || 'Umum'}</span>
+              <span class="question-time">🕒 ${q.time || 'Waktu tidak diketahui'}</span>
+            </div>
+          </div>
+
+          <div class="answer" style="background:#f8fafc;border-left:3px solid #16a34a;">
+            <div class="answer-header" style="color:#16a34a;">❓ Pertanyaan yang ditanyakan:</div>
+            <div class="answer-text">${q.question || '-'}</div>
+          </div>
+
+          ${q.answer ? `
+            <div class="answer" style="margin-top:12px;">
+              <div class="answer-header">💡 Jawaban:</div>
+              <div class="answer-text">${q.answer}</div>
+            </div>` : ``}
+        </div>`;
+    }).join('');
+
+    container.innerHTML = `<h4>💬 Pertanyaan & Jawaban Terbaru</h4>${dataSourceInfo}${html}`;
+    if (loadingMessage) loadingMessage.style.display = 'none';
+  }
+
+  // LOAD FROM SHEETS (header-aware; ga peduli urutan kolom)
+  async function loadQuestionsFromSheet() {
+    try {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      const data = await res.json();
+
+      if (!data.values || data.values.length < 2) {
+        showConnectionStatus(false, 'Belum ada data di spreadsheet');
+        displayQuestions(sampleQuestions, false);
+        return;
+      }
+
+      const headers = data.values[0].map(h => (h || '').toString().trim().toLowerCase());
+      const rows = data.values.slice(1);
+
+      // cari index by header name (beberapa sinonim umum)
+      const findIdx = (names) => {
+        const list = Array.isArray(names) ? names : [names];
+        for (const n of list) {
+          const i = headers.indexOf(n);
+          if (i !== -1) return i;
         }
+        return -1;
+      };
 
-        function showConnectionStatus(isConnected, message) {
-            const el = document.getElementById('connectionStatus');
-            el.innerHTML = isConnected
-                ? `<div class="success-indicator">✅ Terhubung ke database - Data real time aktif</div>`
-                : `<div class="error-message">⚠️ ${message} - Menampilkan data contoh sementara</div>`;
-        }
+      const iTimestamp = 0; // Timestamp biasanya kolom A
+      const iNama     = findIdx(['nama', 'nama lengkap', 'name', 'your name']);
+      const iEmail    = findIdx(['email', 'alamat email', 'e-mail', 'email address']);
+      const iKategori = findIdx(['kategori', 'category']);
+      const iTanya    = findIdx(['pertanyaan', 'pertanyaan yang ditanyakan', 'question', 'pesan', 'message']);
+      const iJawab    = findIdx(['jawaban', 'answer']); // opsional
 
-        // === RENDER ===
-        function renderCards(items = sampleQuestions, real = false) {
-            const wrap = document.getElementById('questionsDisplay');
-            const loading = document.getElementById('loadingMessage');
+      const questionsData = rows.map(r => ({
+        name:  (iNama  >= 0 ? r[iNama]  : r[1]) || 'Penanya Anonim',
+        email: (iEmail >= 0 ? r[iEmail] : ''),
+        category: (iKategori >= 0 ? r[iKategori] : (r[3] || 'Umum')),
+        question: (iTanya >= 0 ? r[iTanya] : (r[4] || 'Pertanyaan tidak tersedia')),
+        answer: (iJawab >= 0 ? (r[iJawab] || '') : (r[5] || '')),
+        time: formatTime(r[iTimestamp])
+      })).reverse(); // terbaru di atas
 
-            if (!items.length) {
-                wrap.innerHTML = `
-                    <h4>💬 Pertanyaan & Jawaban Terbaru</h4>
-                    <div class="q-card"><p style="text-align:center;color:#666;">Belum ada pertanyaan. Jadilah yang pertama bertanya!</p></div>
-                `;
-                return;
-            }
+      showConnectionStatus(true, '');
+      displayQuestions(questionsData, true);
 
-            const info = real
-                ? `<p style="text-align:center;color:#28a745;font-size:.9rem;margin-bottom:.75rem;">📡 Data real-time dari Google Sheets</p>`
-                : `<p style="text-align:center;color:#ffc107;font-size:.9rem;margin-bottom:.75rem;">⚠️ Menampilkan data contoh (koneksi database bermasalah)</p>`;
+    } catch (error) {
+      let msg = 'Gagal memuat data';
+      if (String(error).includes('403')) msg = 'Akses ditolak - Cek sharing Google Sheet (Anyone with the link: Viewer)';
+      else if (String(error).includes('404')) msg = 'Spreadsheet tidak ditemukan';
+      else if (String(error).includes('400')) msg = 'Format permintaan salah';
+      showConnectionStatus(false, msg);
+      displayQuestions(sampleQuestions, false);
+      console.error('❌ Error loading questions:', error);
+    }
+  }
 
-            const html = items.map(q => {
-                const categoryKey = (q.category || 'Umum').toLowerCase();
-                const catColor = categoryColors[categoryKey] || categoryColors.umum;
-                const email = q.email ? `<div class="q-email">${q.email}</div>` : '';
-                const time = q.time || 'Waktu tidak diketahui';
+  // Init
+  document.addEventListener('DOMContentLoaded', function () {
+    loadQuestionsFromSheet();
+    // setInterval(loadQuestionsFromSheet, 60000); // kalau mau auto-refresh
+  });
 
-                return `
-                <div class="q-card">
-                    <div class="q-head">
-                        <div class="q-ident">
-                            <div class="q-name">👤 ${q.name || 'Penanya Anonim'}</div>
-                            ${email}
-                        </div>
-                        <div class="q-right">
-                            <span class="badge" style="background:${catColor}">📂 ${q.category || 'Umum'}</span>
-                            <span class="time-chip">🕒 ${time}</span>
-                        </div>
-                    </div>
+  // Smooth scroll (opsional)
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('a[href^="#"]')) {
+      e.preventDefault();
+      const target = document.querySelector(e.target.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+</script>
 
-                    <div class="q-block">
-                        <div class="q-block-title">❓ Pertanyaan yang ditanyakan:</div>
-                        <div class="q-text">${q.question || '-'}</div>
-                    </div>
-
-                    ${q.answer ? `
-                        <div class="answer">
-                            <div class="answer-header">💡 Jawaban:</div>
-                            <div class="answer-text">${q.answer}</div>
-                        </div>` : ``}
-                </div>`;
-            }).join('');
-
-            wrap.innerHTML = `<h4>💬 Pertanyaan & Jawaban Terbaru</h4>${info}${html}`;
-            if (loading) loading.style.display = 'none';
-        }
-
-        // === LOAD FROM SHEETS (header-aware) ===
-        async function loadQuestionsFromSheet() {
-            try {
-                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
-                const res = await fetch(url);
-                if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-                const data = await res.json();
-
-                if (!data.values || data.values.length < 2) {
-                    showConnectionStatus(false, 'Belum ada data di spreadsheet');
-                    renderCards(sampleQuestions, false);
-                    return;
-                }
-
-                const headers = data.values[0].map(h => (h || '').toString().trim().toLowerCase());
-                const rows = data.values.slice(1);
-
-                // cari index kolom berdasar judul
-                const findIdx = (names) => {
-                    const list = Array.isArray(names) ? names : [names];
-                    for (const n of list) {
-                        const i = headers.indexOf(n);
-                        if (i !== -1) return i;
-                    }
-                    return -1;
-                };
-
-                const iTimestamp = 0; // biasanya timestamp di kolom A
-                const iNama      = findIdx(['nama', 'name', 'your name', 'nama lengkap']);
-                const iEmail     = findIdx(['email', 'alamat email', 'e-mail', 'email address']);
-                const iKategori  = findIdx(['kategori', 'category']);
-                const iTanya     = findIdx(['pertanyaan', 'question', 'pesan', 'message']);
-                const iJawab     = findIdx(['jawaban', 'answer']);
-
-                const mapped = rows.map(r => ({
-                    name: (iNama >= 0 ? r[iNama] : r[1]) || 'Penanya Anonim',
-                    email: (iEmail >= 0 ? r[iEmail] : ''),
-                    category: (iKategori >= 0 ? r[iKategori] : (r[3] || 'Umum')),
-                    question: (iTanya >= 0 ? r[iTanya] : r[2]) || '-',
-                    answer: (iJawab >= 0 ? r[iJawab] : r[4]) || '',
-                    time: formatTime(r[iTimestamp])
-                })).reverse();
-
-                showConnectionStatus(true, '');
-                renderCards(mapped, true);
-
-            } catch (err) {
-                let msg = 'Gagal memuat data';
-                if (String(err).includes('403')) msg = 'Akses ditolak - Periksa sharing Google Sheet (Anyone with the link: Viewer)';
-                else if (String(err).includes('404')) msg = 'Spreadsheet tidak ditemukan';
-                else if (String(err).includes('400')) msg = 'Format permintaan salah';
-                showConnectionStatus(false, msg);
-                renderCards(sampleQuestions, false);
-                console.error(err);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadQuestionsFromSheet();
-            // OPTIONAL: auto-refresh (hemat kuota, jadi off)
-            // setInterval(loadQuestionsFromSheet, 60000);
-        });
-
-        // Smooth anchor scroll
-        document.addEventListener('click', function(e) {
-            if (e.target.matches('a[href^="#"]')) {
-                e.preventDefault();
-                const target = document.querySelector(e.target.getAttribute('href'));
-                if (target) target.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    </script>
 </body>
 </html>
+
