@@ -485,7 +485,7 @@
             try {
                 debug('Starting to load data from Google Sheets...');
                 
-                const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${encodeURIComponent(CONFIG.SHEET_NAME)}!A1:E100?key=${CONFIG.API_KEY}`;
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${encodeURIComponent(CONFIG.SHEET_NAME)}!A1:F100?key=${CONFIG.API_KEY}`;
                 debug('Request URL:', url);
 
                 const response = await fetch(url);
@@ -514,19 +514,19 @@
                 debug('Headers:', headers);
                 debug('Data rows:', dataRows);
 
-                // Map data sesuai dengan struktur Google Form
-                // Kolom: Timestamp | Nama | Pertanyaan | Kategori | Jawaban
+                // Map data sesuai dengan struktur Google Form yang benar
+                // Berdasarkan screenshot: Timestamp | Nama | Email | Pertanyaan | Kategori | Jawaban
                 const questions = dataRows.map((row, index) => {
                     const questionData = {
                         id: index + 1,
                         timestamp: row[0] || '',
                         name: row[1] || 'Penanya Anonim',
-                        question: row[2] || '',
-                        category: row[3] || 'Umum',
-                        answer: row[4] || '',
-                        email: row[5] || '', // jika ada kolom email
+                        email: row[2] || '', // kolom email ada di posisi ke-3
+                        question: row[3] || '', // pertanyaan di posisi ke-4
+                        category: row[4] || 'Umum', // kategori di posisi ke-5
+                        answer: row[5] || '', // jawaban di posisi ke-6
                         time: formatTime(row[0]),
-                        hasAnswer: !!(row[4] && row[4].trim())
+                        hasAnswer: !!(row[5] && row[5].trim()) // cek jawaban di kolom ke-6
                     };
                     return questionData;
                 });
