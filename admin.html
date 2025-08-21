@@ -5,299 +5,218 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - QnA Kampung KB</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f6fa;
-            color: #333;
             line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
         }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
         /* Header */
-        .header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            padding: 1.5rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
+        .header-content { display: flex; justify-content: space-between; align-items: center; text-align: center; }
+        .logo { color: white; }
+        .logo h1 { font-size: 1.8rem; font-weight: bold; margin-bottom: 0.2rem; }
+        .logo p { font-size: 0.9rem; opacity: 0.9; }
+        .admin-badge { background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; color: white; }
 
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 {
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
-
-        .header p {
-            opacity: 0.9;
-            font-size: 0.9rem;
-        }
-
-        .admin-badge {
-            background: rgba(255,255,255,0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-        }
-
-        /* Main Container */
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
+        /* Hero */
+        .hero { padding: 60px 0 40px; text-align: center; color: white; }
+        .hero h2 { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0; animation: fadeInUp 1s ease forwards; }
+        .hero p { font-size: 1.2rem; margin-bottom: 2rem; opacity: 0; animation: fadeInUp 1s ease 0.3s forwards; max-width: 600px; margin-left: auto; margin-right: auto; }
 
         /* Stats Cards */
+        .stats-section { padding: 40px 0; }
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
-
         .stat-card {
-            background: white;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
             padding: 1.5rem;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             text-align: center;
             transition: transform 0.3s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #1e3c72;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        /* Questions Section */
-        .questions-section {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .section-header {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-bottom: 1px solid #e9ecef;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .section-title {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #1e3c72;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .refresh-btn {
-            background: #28a745;
             color: white;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-number { font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .stat-label { opacity: 0.9; font-size: 0.9rem; }
 
-        .refresh-btn:hover {
-            background: #218838;
-        }
+        /* Main Section */
+        .qna-section { padding: 60px 0; background: rgba(255, 255, 255, 0.95); color: #333; border-radius: 20px 20px 0 0; }
+        .qna-container { max-width: 900px; margin: 0 auto; }
+        .qna-section h3 { font-size: 2rem; margin-bottom: 2rem; text-align: center; color: #1e3c72; }
 
-        .refresh-btn:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-        }
+        /* Controls */
+        .admin-controls { background: white; padding: 2rem; border-radius: 15px; margin-bottom: 3rem; box-shadow: 0 10px 30px rgba(30, 60, 114, 0.1); border: 2px solid #e3f2fd; text-align: center; }
+        .controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .control-btn { display: inline-block; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 12px 24px; text-decoration: none; border: none; border-radius: 50px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.3s; }
+        .control-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(30, 60, 114, 0.3); }
+        .control-btn.secondary { background: #28a745; }
+        .control-btn.secondary:hover { background: #218838; }
 
-        .preview-btn {
-            background: #17a2b8;
-            color: white;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-        }
-
-        .preview-btn:hover {
-            background: #138496;
-        }
-
-        /* Question Items */
-        .question-list {
-            max-height: 600px;
-            overflow-y: auto;
-        }
+        /* Questions Display - Same as user view */
+        .questions-display { margin-top: 3rem; }
+        .questions-display h4 { color: #1e3c72; font-size: 1.5rem; margin-bottom: 1.2rem; text-align: center; }
 
         .question-item {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 6px 18px rgba(30,60,114,0.12);
+            border: 1px solid #e5e7eb;
+            border-left: 5px solid #2a5298;
             padding: 1.5rem;
-            border-bottom: 1px solid #f1f3f4;
-            transition: background 0.3s;
+            margin-bottom: 3rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
             position: relative;
         }
 
         .question-item:hover {
-            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30,60,114,0.15);
         }
 
         .question-item.answered {
-            background: #f8fff8;
-            border-left: 4px solid #28a745;
+            border-left-color: #28a745;
         }
 
-        .question-item.pending {
-            background: #fff8f0;
-            border-left: 4px solid #ffc107;
+        .question-item:not(:last-child)::after {
+            content: '';
+            display: block;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: -1.5rem;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 2px;
+            opacity: 0.3;
         }
 
         .question-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .question-meta {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: start;
             gap: 1rem;
-            align-items: center;
-            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
         }
-
-        .author-name {
-            font-weight: bold;
-            color: #1e3c72;
+        
+        .question-author { 
+            font-weight: 700; 
+            color: #1e3c72; 
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
         }
-
-        .question-time {
-            background: #e9ecef;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            color: #666;
-        }
-
+        
         .question-category {
-            background: #007bff;
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
+            background: #2a5298; 
+            color: #fff; 
+            border-radius: 999px;
+            font-size: 0.8rem; 
+            padding: 0.4rem 0.8rem; 
+            font-weight: 600;
+            margin-right: 0.5rem;
         }
-
-        .question-actions {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
+        
+        .question-time {
+            background: #eef2ff; 
+            color: #374151; 
+            border-radius: 999px;
+            font-size: 0.8rem; 
+            padding: 0.4rem 0.7rem;
         }
 
         .question-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .status-answered {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .delete-btn {
-            background: #dc3545;
+            background: #28a745;
             color: white;
-            border: none;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            transition: all 0.3s;
+            padding: 0.3rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
 
-        .delete-btn:hover {
-            background: #c82333;
+        .question-status.pending {
+            background: #ffc107;
+            color: #000;
         }
 
-        .question-text {
-            background: #f8f9fa;
+        /* Question and Answer blocks */
+        .question-block {
+            background: #f8fafc; 
+            padding: 1rem; 
+            border-radius: 12px; 
+            margin-top: 1rem; 
+            border-left: 4px solid #2a5298;
+        }
+
+        .question-block-header { 
+            font-weight: bold; 
+            color: #2a5298; 
+            margin-bottom: 0.5rem; 
+            font-size: 0.95rem; 
+        }
+
+        .answer {
+            background: #f0f9f0; 
+            padding: 1rem; 
+            border-radius: 12px; 
+            margin-top: 1rem; 
+            border-left: 4px solid #4caf50;
+        }
+        .answer-header { 
+            font-weight: bold; 
+            color: #4caf50; 
+            margin-bottom: 0.5rem; 
+            font-size: 0.95rem; 
+        }
+        .answer-text { 
+            color: #555; 
+            line-height: 1.6; 
+            white-space: pre-wrap;
+        }
+
+        /* Admin Answer Form */
+        .admin-answer-form {
+            background: #fff8dc;
             padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            font-style: italic;
-        }
-
-        /* Answer Section */
-        .answer-section {
+            border-radius: 12px;
             margin-top: 1rem;
+            border-left: 4px solid #ffc107;
         }
 
-        .current-answer {
-            background: #d4edda;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border-left: 4px solid #28a745;
-        }
-
-        .answer-label {
+        .admin-answer-header {
             font-weight: bold;
-            color: #155724;
+            color: #856404;
             margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .answer-form {
-            display: flex;
-            gap: 1rem;
-            align-items: flex-start;
+            font-size: 0.95rem;
         }
 
         .answer-textarea {
-            flex: 1;
+            width: 100%;
             padding: 0.75rem;
             border: 2px solid #e9ecef;
             border-radius: 8px;
             resize: vertical;
-            min-height: 80px;
+            min-height: 100px;
             font-family: inherit;
             font-size: 0.9rem;
+            margin-bottom: 0.75rem;
         }
 
         .answer-textarea:focus {
@@ -305,178 +224,56 @@
             border-color: #2a5298;
         }
 
+        .answer-form-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
         .submit-answer-btn {
-            background: #1e3c72;
+            background: #28a745;
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: 0.5rem 1rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 0.85rem;
             transition: all 0.3s;
-            white-space: nowrap;
         }
 
         .submit-answer-btn:hover {
-            background: #2a5298;
-            transform: translateY(-1px);
+            background: #218838;
         }
 
         .submit-answer-btn:disabled {
             background: #6c757d;
             cursor: not-allowed;
-            transform: none;
         }
 
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 5% auto;
-            padding: 2rem;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 80vh;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 1rem;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            color: #1e3c72;
-            font-weight: bold;
-        }
-
-        .close-btn {
-            background: none;
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            padding: 0.5rem 1rem;
             border: none;
-            font-size: 1.5rem;
+            border-radius: 6px;
             cursor: pointer;
-            color: #999;
-            padding: 0.5rem;
+            font-size: 0.85rem;
+            transition: all 0.3s;
         }
 
-        .close-btn:hover {
-            color: #333;
+        .delete-btn:hover {
+            background: #c82333;
         }
 
-        /* User Preview Styles */
-        .preview-question {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+        /* Status & loading */
+        .error-message { background: #fff3cd; color: #856404; padding: 1rem; border-radius: 8px; margin: 1rem 0; border: 1px solid #ffeaa7; }
+        .success-message { background: #d4edda; color: #155724; padding: 1rem; border-radius: 8px; margin: 1rem 0; border: 1px solid #c3e6cb; display: none; }
+        .loading { text-align: center; padding: 2rem; color: #666; }
+        .loading::after { content: "..."; animation: dots 2s infinite; }
+        @keyframes dots { 0%{content:""} 25%{content:"."} 50%{content:".."} 75%{content:"..."} 100%{content:""} }
 
-        .preview-question-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .preview-author {
-            font-weight: bold;
-            color: #1e3c72;
-        }
-
-        .preview-time {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .preview-question-text {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            font-size: 1rem;
-            line-height: 1.6;
-        }
-
-        .preview-answer {
-            background: #e8f5e8;
-            padding: 1rem;
-            border-radius: 8px;
-            border-left: 4px solid #28a745;
-        }
-
-        .preview-answer-label {
-            font-weight: bold;
-            color: #155724;
-            margin-bottom: 0.5rem;
-        }
-
-        .no-answer {
-            color: #666;
-            font-style: italic;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        /* Loading States */
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: #666;
-        }
-
-        .loading::after {
-            content: "...";
-            animation: dots 2s infinite;
-        }
-
-        @keyframes dots {
-            0% { content: ""; }
-            25% { content: "."; }
-            50% { content: ".."; }
-            75% { content: "..."; }
-            100% { content: ""; }
-        }
-
-        /* Error State */
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border: 1px solid #f5c6cb;
-        }
-
-        /* Success Message */
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border: 1px solid #c3e6cb;
-            display: none;
-        }
-
-        /* Empty State */
+        /* Empty state */
         .empty-state {
             text-align: center;
             padding: 3rem;
@@ -484,262 +281,149 @@
         }
 
         .empty-state h3 {
+            color: #1e3c72;
             margin-bottom: 1rem;
-            color: #333;
         }
 
-        /* Debug Info */
-        .debug-info {
-            background: #e9ecef;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            font-family: monospace;
-            font-size: 0.8rem;
-            display: none;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        /* Confirmation Dialog */
-        .confirm-dialog {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            text-align: center;
-            max-width: 400px;
-        }
-
-        .confirm-title {
-            font-size: 1.2rem;
-            color: #dc3545;
-            margin-bottom: 1rem;
-            font-weight: bold;
-        }
-
-        .confirm-message {
-            margin-bottom: 1.5rem;
-            color: #666;
-        }
-
-        .confirm-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-        }
-
-        .confirm-btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .confirm-delete {
-            background: #dc3545;
-            color: white;
-        }
-
-        .confirm-delete:hover {
-            background: #c82333;
-        }
-
-        .confirm-cancel {
-            background: #6c757d;
-            color: white;
-        }
-
-        .confirm-cancel:hover {
-            background: #5a6268;
-        }
+        /* Animations */
+        @keyframes fadeInUp { from { opacity:0; transform: translateY(30px);} to {opacity:1; transform: translateY(0);} }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
+            .hero h2 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            .admin-controls { padding: 1.5rem; }
+            .question-header { grid-template-columns: 1fr; gap: 0.5rem; }
+            .question-item { 
+                padding: 1.25rem; 
+                margin-bottom: 2.5rem;
             }
-
-            .container {
-                padding: 0 1rem;
+            .question-item:not(:last-child)::after {
+                bottom: -1.25rem;
+                width: 40px;
             }
-
-            .question-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
-
-            .question-meta {
-                flex-wrap: wrap;
-                gap: 0.5rem;
-            }
-
-            .answer-form {
+            .answer-form-actions {
                 flex-direction: column;
             }
-
-            .submit-answer-btn {
-                width: 100%;
-            }
-
-            .header-actions {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .modal-content {
-                margin: 10% auto;
-                width: 95%;
-                padding: 1rem;
-            }
-        }
-
-        /* Custom Scrollbar */
-        .question-list::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .question-list::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        .question-list::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 4px;
-        }
-
-        .question-list::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
         }
     </style>
 </head>
 <body>
     <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <div>
-                <h1>🎯 Admin Dashboard</h1>
-                <p>Kelola Pertanyaan QnA Kampung KB</p>
-            </div>
-            <div class="admin-badge">
-                👨‍💼 Admin Mode
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>🎯 Admin Dashboard - QnA Kampung KB</h1>
+                    <p>Kelola Pertanyaan & Jawaban Kampung Keluarga Berencana</p>
+                </div>
+                <div class="admin-badge">
+                    👨‍💼 Admin Mode
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Debug Info -->
-        <div class="debug-info" id="debugInfo"></div>
-
-        <!-- Error Message -->
-        <div class="error-message" id="errorMessage" style="display: none;">
-            ❌ <span id="errorText"></span>
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <h2>Dashboard Admin QnA Kampung KB</h2>
+            <p>Kelola dan jawab pertanyaan dari pengguna seputar Kampung Keluarga Berencana</p>
         </div>
+    </section>
 
-        <!-- Success Message -->
-        <div class="success-message" id="successMessage">
-            ✅ Jawaban berhasil disimpan!
-        </div>
-
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number" id="totalQuestions">-</div>
-                <div class="stat-label">Total Pertanyaan</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="pendingQuestions">-</div>
-                <div class="stat-label">Menunggu Jawaban</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="answeredQuestions">-</div>
-                <div class="stat-label">Sudah Dijawab</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="todayQuestions">-</div>
-                <div class="stat-label">Pertanyaan Hari Ini</div>
-            </div>
-        </div>
-
-        <!-- Questions Section -->
-        <div class="questions-section">
-            <div class="section-header">
-                <h2 class="section-title">📋 Daftar Pertanyaan</h2>
-                <div class="header-actions">
-                    <button class="preview-btn" onclick="showUserPreview()">
-                        👁️ Lihat Tampilan User
-                    </button>
-                    <button class="refresh-btn" onclick="loadQuestions()" id="refreshBtn">
-                        🔄 Refresh Data
-                    </button>
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalQuestions">-</div>
+                    <div class="stat-label">Total Pertanyaan</div>
                 </div>
-            </div>
-            
-            <div class="question-list" id="questionsList">
-                <div class="loading" id="loadingMessage">
-                    Memuat data dari Google Sheets
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingQuestions">-</div>
+                    <div class="stat-label">Menunggu Jawaban</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="answeredQuestions">-</div>
+                    <div class="stat-label">Sudah Dijawab</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="todayQuestions">-</div>
+                    <div class="stat-label">Pertanyaan Hari Ini</div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- User Preview Modal -->
-    <div id="userPreviewModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">👁️ Tampilan User - QnA Kampung KB</h2>
-                <button class="close-btn" onclick="closeModal('userPreviewModal')">&times;</button>
-            </div>
-            <div id="userPreviewContent">
-                <div class="loading">Memuat tampilan user...</div>
+    <!-- QnA Section -->
+    <section class="qna-section">
+        <div class="container">
+            <div class="qna-container">
+                <h3>📋 Kelola Pertanyaan & Jawaban</h3>
+
+                <div class="admin-controls">
+                    <div style="margin-bottom: 1rem;">
+                        <strong>🛠️ Panel Kontrol Admin</strong>
+                        <p style="margin-top: 0.5rem; color: #666;">Gunakan panel ini untuk mengelola pertanyaan dan jawaban</p>
+                    </div>
+                    
+                    <div class="controls-grid">
+                        <button class="control-btn" onclick="loadQuestions()" id="refreshBtn">
+                            🔄 Refresh Data
+                        </button>
+                        <button class="control-btn secondary" onclick="window.open('/qna-user.html', '_blank')">
+                            👁️ Lihat Tampilan User
+                        </button>
+                    </div>
+
+                    <div id="connectionStatus" style="margin-top: 1rem;"></div>
+                </div>
+
+                <!-- Error/Success Messages -->
+                <div class="error-message" id="errorMessage" style="display: none;">
+                    ❌ <span id="errorText"></span>
+                </div>
+                <div class="success-message" id="successMessage">
+                    ✅ Jawaban berhasil disimpan!
+                </div>
+
+                <div class="questions-display" id="questionsDisplay">
+                    <h4>💬 Daftar Pertanyaan</h4>
+                    <div class="loading" id="loadingMessage">Memuat pertanyaan dari database</div>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteConfirmModal" class="modal">
-        <div class="modal-content">
-            <div class="confirm-dialog">
-                <div class="confirm-title">🗑️ Hapus Pertanyaan</div>
-                <div class="confirm-message">
-                    Apakah Anda yakin ingin menghapus pertanyaan ini? Tindakan ini tidak dapat dibatalkan.
-                </div>
-                <div class="confirm-actions">
-                    <button class="confirm-btn confirm-delete" onclick="confirmDelete()">
-                        🗑️ Ya, Hapus
-                    </button>
-                    <button class="confirm-btn confirm-cancel" onclick="closeModal('deleteConfirmModal')">
-                        ❌ Batal
-                    </button>
-                </div>
+    <!-- Footer -->
+    <footer style="background:#1e3c72;color:#fff;text-align:center;padding:2rem 0;">
+        <div class="container">
+            <div class="footer-content" style="max-width:600px;margin:0 auto;">
+                <p><strong>Admin Dashboard - QnA Kampung KB</strong></p>
+                <p>Panel administrasi untuk mengelola sistem tanya jawab</p>
+                <p style="margin-top: 1rem; opacity: 0.8;">&copy; 2025 - Real-time data synchronization</p>
             </div>
         </div>
-    </div>
+    </footer>
 
     <script>
-        // Configuration - HANYA SATU BLOK!
+        // Configuration
         const CONFIG = {
             SHEET_ID: '14gRlgi-XiDMPiaU-cga2FZE_n09NYIIFcTQo3xOskBU',
-            SHEET_NAME: 'Form Responses 1',
             API_KEY: 'AIzaSyAoIM03NMmaPuKx4VuI40aWP0Ukoq-_HHA',
-            SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbw8BoZA9-5ri4saeCJHjlwQEOmTiQKZ0yedjBN2xXWUr7eZTWCbz70xijRddQDhz-vr/exec'
+            SHEET_NAME: 'Form Responses 1'
         };
 
         // Global variables
         let questionsData = [];
         let isLoading = false;
-        let deleteQuestionId = null;
 
         // Category colors
         const categoryColors = {
             'umum': '#6c757d',
             'program kb': '#007bff',
-            'kegiatan kampung kb': '#28a745', 
+            'kegiatan kampung kb': '#28a745',
             'layanan kesehatan': '#17a2b8',
             'administrasi': '#fd7e14'
         };
@@ -747,12 +431,6 @@
         // Debug function
         function debug(message, data = null) {
             console.log('DEBUG:', message, data);
-            const debugEl = document.getElementById('debugInfo');
-            if (debugEl && debugEl.style.display !== 'none') {
-                debugEl.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
-                if (data) debugEl.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-                debugEl.scrollTop = debugEl.scrollHeight;
-            }
         }
 
         // Show error
@@ -774,26 +452,28 @@
             }, 3000);
         }
 
-        // Format timestamp
+        // Format time
         function formatTime(timestamp) {
             if (!timestamp) return 'Waktu tidak diketahui';
             
             try {
-                const date = new Date(timestamp);
-                if (isNaN(date.getTime())) return 'Format waktu tidak valid';
-                
                 const now = new Date();
+                const date = new Date(timestamp);
+                
+                if (isNaN(date.getTime())) {
+                    return 'Format waktu tidak valid';
+                }
+                
                 const diffMs = now - date;
                 const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
                 const diffDays = Math.floor(diffHours / 24);
-
+                
                 if (diffHours < 1) return 'Baru saja';
                 if (diffHours < 24) return `${diffHours} jam yang lalu`;
                 if (diffDays < 7) return `${diffDays} hari yang lalu`;
                 return date.toLocaleDateString('id-ID');
             } catch (error) {
-                debug('Error formatting time:', { timestamp, error });
-                return 'Format waktu error';
+                return 'Error waktu';
             }
         }
 
@@ -801,10 +481,9 @@
         function updateStats(data) {
             try {
                 const total = data.length;
-                const pending = data.filter(q => q.status === 'pending').length;
-                const answered = data.filter(q => q.status === 'answered').length;
+                const pending = data.filter(q => !q.hasAnswer).length;
+                const answered = data.filter(q => q.hasAnswer).length;
                 
-                // Get today's questions
                 const today = new Date();
                 const todayStr = today.toISOString().split('T')[0];
                 const todayCount = data.filter(q => {
@@ -827,98 +506,21 @@
             }
         }
 
-        // Display questions
-        function displayQuestions(data) {
-            try {
-                const container = document.getElementById('questionsList');
-                const loading = document.getElementById('loadingMessage');
-
-                if (data.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <h3>📝 Belum Ada Pertanyaan</h3>
-                            <p>Pertanyaan dari pengguna akan muncul di sini</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // Sort by timestamp (newest first)
-                const sortedData = data.sort((a, b) => {
-                    try {
-                        return new Date(b.timestamp) - new Date(a.timestamp);
-                    } catch (e) {
-                        return 0;
-                    }
-                });
-
-                const questionsHTML = sortedData.map(q => {
-                    const categoryKey = (q.category || 'umum').toLowerCase();
-                    const categoryColor = categoryColors[categoryKey] || categoryColors.umum;
-                    
-                    return `
-                        <div class="question-item ${q.status}" data-id="${q.id}">
-                            <div class="question-header">
-                                <div class="question-meta">
-                                    <span class="author-name">👤 ${q.name || 'Penanya Anonim'}</span>
-                                    <span class="question-time">🕒 ${formatTime(q.timestamp)}</span>
-                                    <span class="question-category" style="background: ${categoryColor}">
-                                        📂 ${q.category || 'Umum'}
-                                    </span>
-                                </div>
-                                <div class="question-actions">
-                                    <span class="question-status ${q.status === 'answered' ? 'status-answered' : 'status-pending'}">
-                                        ${q.status === 'answered' ? '✅ Sudah Dijawab' : '⏳ Menunggu Jawaban'}
-                                    </span>
-                                    <button class="delete-btn" onclick="deleteQuestion(${q.id})" title="Hapus Pertanyaan">
-                                        🗑️ Hapus
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="question-text">
-                                💬 "${q.question || 'Pertanyaan tidak tersedia'}"
-                            </div>
-
-                            <div class="answer-section">
-                                ${q.answer ? `
-                                    <div class="current-answer">
-                                        <div class="answer-label">💡 Jawaban Anda:</div>
-                                        <div>${q.answer}</div>
-                                    </div>
-                                ` : ''}
-                                
-                                <div class="answer-form">
-                                    <textarea 
-                                        class="answer-textarea" 
-                                        placeholder="Ketik jawaban untuk pertanyaan ini..."
-                                        data-question-id="${q.id}"
-                                    >${q.answer || ''}</textarea>
-                                    <button 
-                                        class="submit-answer-btn" 
-                                        onclick="submitAnswer(${q.id})"
-                                    >
-                                        ${q.answer ? '✏️ Update Jawaban' : '📤 Kirim Jawaban'}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-                container.innerHTML = questionsHTML;
-                debug('Questions displayed:', { count: sortedData.length });
-            } catch (error) {
-                debug('Error displaying questions:', error);
-                showError('Gagal menampilkan pertanyaan', error);
-            }
+        // Show status
+        function showStatus(ok, msg) {
+            const el = document.getElementById('connectionStatus');
+            if (!el) return;
+            
+            el.innerHTML = ok
+                ? `<div style="color:#28a745;font-weight:bold;">✅ Terhubung ke database - Data real time aktif (${questionsData.length} pertanyaan)</div>`
+                : `<div style="color:#dc3545;font-weight:bold;">⚠️ ${msg} - Coba refresh halaman</div>`;
         }
 
-        // Submit answer
-        async function submitAnswer(questionId) {
+        // Submit answer to Google Sheets (manual update)
+        async function submitAnswer(questionId, rowIndex) {
             try {
-                const q = questionsData.find(x => x.id === questionId);
-                if (!q) {
+                const question = questionsData.find(q => q.id === questionId);
+                if (!question) {
                     throw new Error('Pertanyaan tidak ditemukan');
                 }
 
@@ -930,46 +532,49 @@
                     return;
                 }
 
-                const btn = document.querySelector(`[onclick="submitAnswer(${questionId})"]`);
+                const btn = document.querySelector(`[onclick*="submitAnswer(${questionId}"]`);
                 btn.disabled = true;
                 btn.textContent = '⏳ Menyimpan...';
 
-                debug('Submitting answer:', { questionId, rowNumber: q.rowNumber, answerLength: answer.length });
+                debug('Submitting answer:', { questionId, rowIndex, answerLength: answer.length });
 
-                const response = await fetch(CONFIG.SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        action: 'updateAnswer',
-                        rowNumber: q.rowNumber, 
-                        answer: answer 
-                    })
-                });
+                // For now, we'll show instructions to manually update Google Sheets
+                // In a real implementation, you'd use Google Apps Script or Sheets API
+                
+                alert(`Untuk menyimpan jawaban ini:
 
-                const result = await response.json();
-                debug('Submit response:', result);
+1. Buka Google Sheets: https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/edit
+2. Cari baris dengan pertanyaan: "${question.question.substring(0, 50)}..."
+3. Masukkan jawaban berikut di kolom F (Jawaban):
 
-                if (!result.ok) {
-                    throw new Error(result.error || 'Gagal menyimpan jawaban');
-                }
+"${answer}"
 
-                showSuccess('Jawaban berhasil disimpan!');
-                await loadQuestions(); // Reload to show updated data
+4. Tekan Enter untuk menyimpan`);
+
+                // Update local data to show the answer
+                question.answer = answer;
+                question.hasAnswer = true;
+                
+                // Re-render to show the updated answer
+                renderQuestions(questionsData, true);
+                updateStats(questionsData);
+                
+                showSuccess('Instruksi untuk menyimpan jawaban telah ditampilkan!');
 
             } catch (error) {
                 debug('Error submitting answer:', error);
-                showError('Gagal menyimpan jawaban', error);
+                showError('Gagal memproses jawaban', error);
             } finally {
                 // Reset button state
-                const btn = document.querySelector(`[onclick="submitAnswer(${questionId})"]`);
+                const btn = document.querySelector(`[onclick*="submitAnswer(${questionId}"]`);
                 if (btn) {
                     btn.disabled = false;
-                    btn.textContent = btn.textContent.includes('Update') ? '✏️ Update Jawaban' : '📤 Kirim Jawaban';
+                    btn.textContent = btn.textContent.includes('Update') ? '✏️ Update' : '📤 Kirim';
                 }
             }
         }
 
-        // Delete question
+        // Delete question (show instructions)
         function deleteQuestion(questionId) {
             const question = questionsData.find(q => q.id === questionId);
             if (!question) {
@@ -977,115 +582,109 @@
                 return;
             }
 
-            deleteQuestionId = questionId;
-            document.getElementById('deleteConfirmModal').style.display = 'block';
-        }
+            if (confirm(`Apakah Anda yakin ingin menghapus pertanyaan ini?\n\n"${question.question.substring(0, 100)}..."\n\nCatatan: Anda perlu menghapusnya secara manual dari Google Sheets.`)) {
+                alert(`Untuk menghapus pertanyaan ini:
 
-        // Confirm delete
-        async function confirmDelete() {
-            if (!deleteQuestionId) return;
-
-            try {
-                const question = questionsData.find(q => q.id === deleteQuestionId);
-                if (!question) throw new Error('Pertanyaan tidak ditemukan');
-
-                debug('Deleting question:', { questionId: deleteQuestionId, rowNumber: question.rowNumber });
-
-                const response = await fetch(CONFIG.SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'deleteRow',
-                        rowNumber: question.rowNumber
-                    })
-                });
-
-                const result = await response.json();
-                debug('Delete response:', result);
-
-                if (!result.ok) {
-                    throw new Error(result.error || 'Gagal menghapus pertanyaan');
-                }
-
-                showSuccess('Pertanyaan berhasil dihapus!');
-                closeModal('deleteConfirmModal');
-                deleteQuestionId = null;
-                await loadQuestions(); // Reload data
-
-            } catch (error) {
-                debug('Error deleting question:', error);
-                showError('Gagal menghapus pertanyaan', error);
+1. Buka Google Sheets: https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/edit
+2. Cari baris dengan pertanyaan: "${question.question.substring(0, 50)}..."
+3. Klik kanan pada nomor baris dan pilih "Delete row"
+4. Refresh halaman admin ini untuk melihat perubahan`);
             }
         }
 
-        // Show user preview
-        function showUserPreview() {
-            const modal = document.getElementById('userPreviewModal');
-            const content = document.getElementById('userPreviewContent');
-            
-            modal.style.display = 'block';
-            content.innerHTML = '<div class="loading">Memuat tampilan user...</div>';
+        // Render questions (same as user view but with admin controls)
+        function renderQuestions(questions, isRealData = false) {
+            const displayEl = document.getElementById('questionsDisplay');
+            const loadingEl = document.getElementById('loadingMessage');
 
-            // Filter only answered questions for user view
-            const answeredQuestions = questionsData.filter(q => q.status === 'answered');
+            if (!displayEl) return;
 
-            if (answeredQuestions.length === 0) {
-                content.innerHTML = `
-                    <div class="no-answer">
-                        <h3>🤔 Belum Ada Jawaban</h3>
-                        <p>Jawaban yang sudah diberikan akan muncul di sini</p>
+            if (loadingEl) loadingEl.style.display = 'none';
+
+            const statusInfo = isRealData
+                ? `<p style="text-align:center;color:#28a745;font-size:.9rem;margin-bottom:1.5rem">📡 Data real-time dari Google Sheets (${questions.length} pertanyaan)</p>`
+                : `<p style="text-align:center;color:#ffc107;font-size:.9rem;margin-bottom:1.5rem">⚠️ Tidak dapat memuat data dari server</p>`;
+
+            if (!questions || questions.length === 0) {
+                displayEl.innerHTML = `
+                    <h4>💬 Daftar Pertanyaan</h4>
+                    ${statusInfo}
+                    <div class="empty-state">
+                        <h3>📝 Belum Ada Pertanyaan</h3>
+                        <p>Pertanyaan dari pengguna akan muncul di sini</p>
                     </div>
                 `;
                 return;
             }
 
-            // Sort by newest first
-            const sortedQuestions = answeredQuestions.sort((a, b) => {
-                try {
-                    return new Date(b.timestamp) - new Date(a.timestamp);
-                } catch (e) {
-                    return 0;
-                }
-            });
-
-            const previewHTML = sortedQuestions.map(q => {
+            const questionsHTML = questions.map((q, index) => {
                 const categoryKey = (q.category || 'umum').toLowerCase();
                 const categoryColor = categoryColors[categoryKey] || categoryColors.umum;
-
+                
                 return `
-                    <div class="preview-question">
-                        <div class="preview-question-header">
+                    <div class="question-item ${q.hasAnswer ? 'answered' : ''}">
+                        <div class="question-header">
                             <div>
-                                <span class="preview-author">👤 ${q.name || 'Penanya Anonim'}</span>
-                                <span class="question-category" style="background: ${categoryColor}; margin-left: 1rem;">
-                                    📂 ${q.category || 'Umum'}
+                                <div class="question-author">👤 ${q.name || 'Penanya Anonim'}</div>
+                                ${q.email ? `<div style="font-size:.9rem;color:#6b7280;margin-top:2px">✉️ ${q.email}</div>` : ''}
+                            </div>
+                            <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+                                <span class="question-category" style="background:${categoryColor}">📂 ${q.category || 'Umum'}</span>
+                                <span class="question-time">🕒 ${q.time}</span>
+                                <span class="question-status ${q.hasAnswer ? '' : 'pending'}">
+                                    ${q.hasAnswer ? '✅ Dijawab' : '⏳ Menunggu'}
                                 </span>
                             </div>
-                            <span class="preview-time">🕒 ${formatTime(q.timestamp)}</span>
                         </div>
-                        
-                        <div class="preview-question-text">
-                            <strong>❓ Pertanyaan:</strong><br>
-                            ${q.question || 'Pertanyaan tidak tersedia'}
+
+                        <div class="question-block">
+                            <div class="question-block-header">❓ Pertanyaan:</div>
+                            <div class="answer-text">${q.question || 'Pertanyaan tidak tersedia'}</div>
                         </div>
-                        
-                        <div class="preview-answer">
-                            <div class="preview-answer-label">💡 Jawaban:</div>
-                            <div>${q.answer || 'Belum ada jawaban'}</div>
+
+                        ${q.hasAnswer ? `
+                            <div class="answer">
+                                <div class="answer-header">💡 Jawaban Anda:</div>
+                                <div class="answer-text">${q.answer}</div>
+                            </div>
+                        ` : ''}
+
+                        <div class="admin-answer-form">
+                            <div class="admin-answer-header">
+                                ${q.hasAnswer ? '✏️ Edit Jawaban:' : '📝 Tulis Jawaban:'}
+                            </div>
+                            <textarea 
+                                class="answer-textarea" 
+                                placeholder="Ketik jawaban untuk pertanyaan ini..."
+                                data-question-id="${q.id}"
+                            >${q.answer || ''}</textarea>
+                            <div class="answer-form-actions">
+                                <button 
+                                    class="delete-btn" 
+                                    onclick="deleteQuestion(${q.id})"
+                                    title="Hapus Pertanyaan"
+                                >
+                                    🗑️ Hapus
+                                </button>
+                                <button 
+                                    class="submit-answer-btn" 
+                                    onclick="submitAnswer(${q.id}, ${index})"
+                                >
+                                    ${q.hasAnswer ? '✏️ Update' : '📤 Kirim'}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
             }).join('');
 
-            content.innerHTML = previewHTML;
-        }
+            displayEl.innerHTML = `
+                <h4>💬 Daftar Pertanyaan</h4>
+                ${statusInfo}
+                ${questionsHTML}
+            `;
 
-        // Close modal
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-            if (modalId === 'deleteConfirmModal') {
-                deleteQuestionId = null;
-            }
+            debug('Questions rendered:', { count: questions.length, isRealData });
         }
 
         // Load questions from Google Sheets
@@ -1098,19 +697,15 @@
             try {
                 isLoading = true;
                 const refreshBtn = document.getElementById('refreshBtn');
-                const loadingMsg = document.getElementById('loadingMessage');
-                
+                const loadingEl = document.getElementById('loadingMessage');
+
                 refreshBtn.disabled = true;
                 refreshBtn.textContent = '⏳ Loading...';
-                loadingMsg.style.display = 'block';
-                loadingMsg.textContent = 'Mengambil data dari Google Sheets...';
+                if (loadingEl) loadingEl.style.display = 'block';
 
-                debug('Loading questions from:', {
-                    sheetId: CONFIG.SHEET_ID,
-                    sheetName: CONFIG.SHEET_NAME
-                });
+                debug('Loading questions from Google Sheets...');
 
-                const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${encodeURIComponent(CONFIG.SHEET_NAME)}!A1:E100?key=${CONFIG.API_KEY}`;
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${encodeURIComponent(CONFIG.SHEET_NAME)}!A1:F100?key=${CONFIG.API_KEY}`;
                 debug('Request URL:', url);
 
                 const response = await fetch(url);
@@ -1123,46 +718,68 @@
                 }
 
                 const data = await response.json();
-                debug('Raw data received:', data);
+                debug('Raw data from API:', data);
 
-                const rows = (data.values || []);
-                debug('Rows count:', rows.length);
-
-                if (rows.length < 2) {
-                    questionsData = [];
-                    debug('No data rows found');
-                } else {
-                    const dataRows = rows.slice(1); // Skip header
-                    questionsData = dataRows.map((row, i) => {
-                        const questionData = {
-                            id: i + 1,
-                            rowNumber: i + 2,
-                            timestamp: row[0] || '',
-                            name: row[1] || 'Penanya Anonim',
-                            question: row[2] || '',
-                            category: row[3] || 'Umum',
-                            answer: row[4] || '',
-                            status: (row[4] && row[4].trim()) ? 'answered' : 'pending'
-                        };
-                        return questionData;
-                    });
-                    debug('Processed questions:', questionsData);
+                if (!data.values || data.values.length < 2) {
+                    debug('No data found in spreadsheet');
+                    showStatus(false, 'Belum ada data di spreadsheet');
+                    renderQuestions([], false);
+                    return;
                 }
 
-                displayQuestions(questionsData);
-                updateStats(questionsData);
-                loadingMsg.style.display = 'none';
+                const rows = data.values;
+                const headers = rows[0];
+                const dataRows = rows.slice(1);
+
+                debug('Headers:', headers);
+                debug('Data rows:', dataRows);
+
+                // Map data sesuai dengan struktur Google Form yang benar
+                // Berdasarkan fix sebelumnya: Timestamp | Nama | Email | Kategori | Pertanyaan | Jawaban
+                const questions = dataRows.map((row, index) => {
+                    const questionData = {
+                        id: index + 1,
+                        timestamp: row[0] || '',
+                        name: row[1] || 'Penanya Anonim',
+                        email: row[2] || '',
+                        category: row[3] || 'Umum',
+                        question: row[4] || '',
+                        answer: row[5] || '',
+                        time: formatTime(row[0]),
+                        hasAnswer: !!(row[5] && row[5].trim())
+                    };
+                    return questionData;
+                });
+
+                // Sort by newest first
+                const sortedQuestions = questions.sort((a, b) => {
+                    try {
+                        return new Date(b.timestamp) - new Date(a.timestamp);
+                    } catch (e) {
+                        return 0;
+                    }
+                });
+
+                debug('Processed questions:', sortedQuestions);
+
+                questionsData = sortedQuestions;
+                showStatus(true, '');
+                renderQuestions(sortedQuestions, true);
+                updateStats(sortedQuestions);
 
             } catch (error) {
+                console.error('Error loading data:', error);
                 debug('Error loading questions:', error);
-                showError('Gagal memuat data dari Google Sheets', error);
+                showStatus(false, `Gagal memuat data: ${error.message}`);
+                renderQuestions([], false);
                 
                 // Show empty state on error
-                document.getElementById('questionsList').innerHTML = `
+                document.getElementById('questionsDisplay').innerHTML = `
+                    <h4>💬 Daftar Pertanyaan</h4>
                     <div class="empty-state">
                         <h3>❌ Gagal Memuat Data</h3>
                         <p>Coba refresh halaman atau periksa koneksi internet</p>
-                        <button onclick="loadQuestions()" class="refresh-btn" style="margin-top: 1rem;">
+                        <button onclick="loadQuestions()" class="control-btn" style="margin-top: 1rem;">
                             🔄 Coba Lagi
                         </button>
                     </div>
@@ -1175,39 +792,19 @@
             }
         }
 
-        // Initialize
+        // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            debug('DOM loaded, starting initialization...');
-            
-            // Enable debug mode for troubleshooting
-            if (window.location.hash === '#debug') {
-                document.getElementById('debugInfo').style.display = 'block';
-                debug('Debug mode enabled');
-            }
-
+            debug('DOM loaded, initializing admin dashboard...');
             loadQuestions();
-            
-            // Auto-refresh every 60 seconds
+
+            // Auto-refresh every 30 seconds
             setInterval(() => {
                 if (!isLoading) {
-                    debug('Auto-refreshing...');
+                    debug('Auto-refreshing questions...');
                     loadQuestions();
                 }
-            }, 60000);
+            }, 30000);
         });
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                    if (modal.id === 'deleteConfirmModal') {
-                        deleteQuestionId = null;
-                    }
-                }
-            });
-        }
 
         // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
@@ -1216,33 +813,11 @@
                 e.preventDefault();
                 loadQuestions();
             }
-            // Ctrl+D to toggle debug
-            if (e.ctrlKey && e.key === 'd') {
-                e.preventDefault();
-                const debugEl = document.getElementById('debugInfo');
-                debugEl.style.display = debugEl.style.display === 'none' ? 'block' : 'none';
-            }
-            // Escape to close modals
-            if (e.key === 'Escape') {
-                const modals = document.querySelectorAll('.modal');
-                modals.forEach(modal => {
-                    if (modal.style.display === 'block') {
-                        modal.style.display = 'none';
-                        if (modal.id === 'deleteConfirmModal') {
-                            deleteQuestionId = null;
-                        }
-                    }
-                });
-            }
         });
 
         // Global error handler
         window.addEventListener('error', function(e) {
             debug('Global error:', e.error);
-        });
-
-        window.addEventListener('unhandledrejection', function(e) {
-            debug('Unhandled promise rejection:', e.reason);
         });
     </script>
 </body>
