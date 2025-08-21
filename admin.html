@@ -130,6 +130,11 @@
             background: #218838;
         }
 
+        .refresh-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
         /* Question Items */
         .question-list {
             max-height: 600px;
@@ -300,6 +305,16 @@
             100% { content: ""; }
         }
 
+        /* Error State */
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #f5c6cb;
+        }
+
         /* Success Message */
         .success-message {
             background: #d4edda;
@@ -321,6 +336,17 @@
         .empty-state h3 {
             margin-bottom: 1rem;
             color: #333;
+        }
+
+        /* Debug Info */
+        .debug-info {
+            background: #e9ecef;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+            display: none;
         }
 
         /* Responsive */
@@ -390,6 +416,19 @@
 
     <!-- Main Container -->
     <div class="container">
+        <!-- Debug Info -->
+        <div class="debug-info" id="debugInfo"></div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage" style="display: none;">
+            ❌ <span id="errorText"></span>
+        </div>
+
+        <!-- Success Message -->
+        <div class="success-message" id="successMessage">
+            ✅ Jawaban berhasil disimpan!
+        </div>
+
         <!-- Stats Cards -->
         <div class="stats-grid">
             <div class="stat-card">
@@ -410,16 +449,11 @@
             </div>
         </div>
 
-        <!-- Success Message -->
-        <div class="success-message" id="successMessage">
-            ✅ Jawaban berhasil disimpan!
-        </div>
-
         <!-- Questions Section -->
         <div class="questions-section">
             <div class="section-header">
                 <h2 class="section-title">📋 Daftar Pertanyaan</h2>
-                <button class="refresh-btn" onclick="loadQuestions()">
+                <button class="refresh-btn" onclick="loadQuestions()" id="refreshBtn">
                     🔄 Refresh Data
                 </button>
             </div>
@@ -433,54 +467,17 @@
     </div>
 
     <script>
-        // Configuration
-        <script>
-// Configuration
-const SHEET_ID   = '14gRlgi-XiDMPiaU-cga2FZE_n09NYIIFcTQo3xOskBU';
-const SHEET_NAME = 'Form Responses 1';
-const API_KEY    = 'AIzaSyAoIM03NMmaPuKx4VuI40aWP0Ukoq-_HHA'; // sama persis
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw8BoZA9-5ri4saeCJHjlwQEOmTiQKZ0yedjBN2xXWUr7eZTWCbz70xijRddQDhz-vr/exec';
+        // Configuration - HANYA SATU BLOK!
+        const CONFIG = {
+            SHEET_ID: '14gRlgi-XiDMPiaU-cga2FZE_n09NYIIFcTQo3xOskBU',
+            SHEET_NAME: 'Form Responses 1',
+            API_KEY: 'AIzaSyAoIM03NMmaPuKx4VuI40aWP0Ukoq-_HHA',
+            SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbw8BoZA9-5ri4saeCJHjlwQEOmTiQKZ0yedjBN2xXWUr7eZTWCbz70xijRddQDhz-vr/exec'
+        };
 
-// kosongin biar diisi hasil fetch
-let questionsData = [];
-</script>
-
-    
-        const SHEET_ID = '14gRlgi-XiDMPiaU-cga2FZE_n09NYIIFcTQo3xOskBU';
-        
-        // Sample data for demonstration
-        let questionsData = [
-            {
-                id: 1,
-                timestamp: '2025/01/10 14:30:00',
-                name: 'Ibu Sari Wulandari',
-                email: 'sari@email.com',
-                category: 'Program KB',
-                question: 'Bagaimana cara mendaftarkan diri untuk mengikuti program KB di Kampung KB? Apakah ada syarat khusus yang harus dipenuhi?',
-                answer: '',
-                status: 'pending'
-            },
-            {
-                id: 2,
-                timestamp: '2025/01/10 10:15:00',
-                name: 'Bapak Ahmad Rizki',
-                email: 'ahmad@email.com',
-                category: 'Kegiatan Kampung KB',
-                question: 'Apa saja kegiatan rutin yang dilakukan di Kampung KB? Apakah ada jadwal yang bisa saya ikuti?',
-                answer: 'Kegiatan rutin meliputi: posyandu bulanan setiap tanggal 5, kelas ibu hamil setiap Rabu pagi, penyuluhan KB setiap Jumat sore, senam sehat keluarga setiap Minggu pagi di lapangan RT, dan konseling pranikah setiap Selasa. Jadwal lengkap bisa dilihat di papan pengumuman RT/RW atau hubungi kader KB setempat.',
-                status: 'answered'
-            },
-            {
-                id: 3,
-                timestamp: '2025/01/10 08:45:00',
-                name: 'Ibu Maya Sinta',
-                email: 'maya@email.com',
-                category: 'Layanan Kesehatan',
-                question: 'Apakah layanan konseling KB di Kampung KB gratis? Dan bagaimana prosedur untuk mendapatkan layanan tersebut?',
-                answer: 'Ya, semua layanan konseling KB di Kampung KB 100% gratis. Prosedurnya sangat mudah: 1) Datang ke pos KB terdekat dengan membawa KTP dan KK, 2) Isi formulir konseling, 3) Konsultasi dengan petugas KB yang tersertifikasi, 4) Dapatkan alat kontrasepsi gratis jika diperlukan. Buka setiap hari Senin-Jumat jam 08.00-15.00.',
-                status: 'answered'
-            }
-        ];
+        // Global variables
+        let questionsData = [];
+        let isLoading = false;
 
         // Category colors
         const categoryColors = {
@@ -491,176 +488,349 @@ let questionsData = [];
             'administrasi': '#fd7e14'
         };
 
+        // Debug function
+        function debug(message, data = null) {
+            console.log('DEBUG:', message, data);
+            const debugEl = document.getElementById('debugInfo');
+            if (debugEl && debugEl.style.display !== 'none') {
+                debugEl.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
+                if (data) debugEl.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                debugEl.scrollTop = debugEl.scrollHeight;
+            }
+        }
+
+        // Show error
+        function showError(message, error = null) {
+            console.error('ERROR:', message, error);
+            document.getElementById('errorText').textContent = message + (error ? `: ${error.message}` : '');
+            document.getElementById('errorMessage').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('errorMessage').style.display = 'none';
+            }, 10000);
+        }
+
+        // Show success
+        function showSuccess(message) {
+            document.getElementById('successMessage').textContent = `✅ ${message}`;
+            document.getElementById('successMessage').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 3000);
+        }
+
         // Format timestamp
         function formatTime(timestamp) {
-            const date = new Date(timestamp);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-            const diffDays = Math.floor(diffHours / 24);
+            if (!timestamp) return 'Waktu tidak diketahui';
+            
+            try {
+                const date = new Date(timestamp);
+                if (isNaN(date.getTime())) return 'Format waktu tidak valid';
+                
+                const now = new Date();
+                const diffMs = now - date;
+                const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                const diffDays = Math.floor(diffHours / 24);
 
-            if (diffHours < 1) return 'Baru saja';
-            if (diffHours < 24) return `${diffHours} jam yang lalu`;
-            if (diffDays < 7) return `${diffDays} hari yang lalu`;
-            return date.toLocaleDateString('id-ID');
+                if (diffHours < 1) return 'Baru saja';
+                if (diffHours < 24) return `${diffHours} jam yang lalu`;
+                if (diffDays < 7) return `${diffDays} hari yang lalu`;
+                return date.toLocaleDateString('id-ID');
+            } catch (error) {
+                debug('Error formatting time:', { timestamp, error });
+                return 'Format waktu error';
+            }
         }
 
         // Update statistics
         function updateStats(data) {
-            const total = data.length;
-            const pending = data.filter(q => q.status === 'pending').length;
-            const answered = data.filter(q => q.status === 'answered').length;
-            
-            // Get today's questions
-            const today = new Date();
-            const todayStr = today.toISOString().split('T')[0];
-            const todayCount = data.filter(q => {
-                const qDate = new Date(q.timestamp).toISOString().split('T')[0];
-                return qDate === todayStr;
-            }).length;
+            try {
+                const total = data.length;
+                const pending = data.filter(q => q.status === 'pending').length;
+                const answered = data.filter(q => q.status === 'answered').length;
+                
+                // Get today's questions
+                const today = new Date();
+                const todayStr = today.toISOString().split('T')[0];
+                const todayCount = data.filter(q => {
+                    try {
+                        const qDate = new Date(q.timestamp).toISOString().split('T')[0];
+                        return qDate === todayStr;
+                    } catch (e) {
+                        return false;
+                    }
+                }).length;
 
-            document.getElementById('totalQuestions').textContent = total;
-            document.getElementById('pendingQuestions').textContent = pending;
-            document.getElementById('answeredQuestions').textContent = answered;
-            document.getElementById('todayQuestions').textContent = todayCount;
+                document.getElementById('totalQuestions').textContent = total;
+                document.getElementById('pendingQuestions').textContent = pending;
+                document.getElementById('answeredQuestions').textContent = answered;
+                document.getElementById('todayQuestions').textContent = todayCount;
+
+                debug('Stats updated:', { total, pending, answered, todayCount });
+            } catch (error) {
+                debug('Error updating stats:', error);
+            }
         }
 
         // Display questions
         function displayQuestions(data) {
-            const container = document.getElementById('questionsList');
-            const loading = document.getElementById('loadingMessage');
+            try {
+                const container = document.getElementById('questionsList');
+                const loading = document.getElementById('loadingMessage');
 
-            if (data.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <h3>📝 Belum Ada Pertanyaan</h3>
-                        <p>Pertanyaan dari pengguna akan muncul di sini</p>
-                    </div>
-                `;
-                return;
-            }
+                if (data.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h3>📝 Belum Ada Pertanyaan</h3>
+                            <p>Pertanyaan dari pengguna akan muncul di sini</p>
+                        </div>
+                    `;
+                    return;
+                }
 
-            // Sort by timestamp (newest first)
-            const sortedData = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                // Sort by timestamp (newest first)
+                const sortedData = data.sort((a, b) => {
+                    try {
+                        return new Date(b.timestamp) - new Date(a.timestamp);
+                    } catch (e) {
+                        return 0;
+                    }
+                });
 
-            const questionsHTML = sortedData.map(q => {
-                const categoryKey = q.category.toLowerCase();
-                const categoryColor = categoryColors[categoryKey] || categoryColors.umum;
-                
-                return `
-                    <div class="question-item ${q.status}" data-id="${q.id}">
-                        <div class="question-header">
-                            <div class="question-meta">
-                                <span class="author-name">👤 ${q.name}</span>
-                                <span class="question-time">🕒 ${formatTime(q.timestamp)}</span>
-                                <span class="question-category" style="background: ${categoryColor}">
-                                    📂 ${q.category}
+                const questionsHTML = sortedData.map(q => {
+                    const categoryKey = (q.category || 'umum').toLowerCase();
+                    const categoryColor = categoryColors[categoryKey] || categoryColors.umum;
+                    
+                    return `
+                        <div class="question-item ${q.status}" data-id="${q.id}">
+                            <div class="question-header">
+                                <div class="question-meta">
+                                    <span class="author-name">👤 ${q.name || 'Penanya Anonim'}</span>
+                                    <span class="question-time">🕒 ${formatTime(q.timestamp)}</span>
+                                    <span class="question-category" style="background: ${categoryColor}">
+                                        📂 ${q.category || 'Umum'}
+                                    </span>
+                                </div>
+                                <span class="question-status ${q.status === 'answered' ? 'status-answered' : 'status-pending'}">
+                                    ${q.status === 'answered' ? '✅ Sudah Dijawab' : '⏳ Menunggu Jawaban'}
                                 </span>
                             </div>
-                            <span class="question-status ${q.status === 'answered' ? 'status-answered' : 'status-pending'}">
-                                ${q.status === 'answered' ? '✅ Sudah Dijawab' : '⏳ Menunggu Jawaban'}
-                            </span>
-                        </div>
-                        
-                        <div class="question-text">
-                            💬 "${q.question}"
-                        </div>
-
-                        <div class="answer-section">
-                            ${q.answer ? `
-                                <div class="current-answer">
-                                    <div class="answer-label">💡 Jawaban Anda:</div>
-                                    <div>${q.answer}</div>
-                                </div>
-                            ` : ''}
                             
-                            <div class="answer-form">
-                                <textarea 
-                                    class="answer-textarea" 
-                                    placeholder="Ketik jawaban untuk pertanyaan ini..."
-                                    data-question-id="${q.id}"
-                                >${q.answer || ''}</textarea>
-                                <button 
-                                    class="submit-answer-btn" 
-                                    onclick="submitAnswer(${q.id})"
-                                    ${q.status === 'answered' ? '' : ''}
-                                >
-                                    ${q.answer ? '✏️ Update Jawaban' : '📤 Kirim Jawaban'}
-                                </button>
+                            <div class="question-text">
+                                💬 "${q.question || 'Pertanyaan tidak tersedia'}"
+                            </div>
+
+                            <div class="answer-section">
+                                ${q.answer ? `
+                                    <div class="current-answer">
+                                        <div class="answer-label">💡 Jawaban Anda:</div>
+                                        <div>${q.answer}</div>
+                                    </div>
+                                ` : ''}
+                                
+                                <div class="answer-form">
+                                    <textarea 
+                                        class="answer-textarea" 
+                                        placeholder="Ketik jawaban untuk pertanyaan ini..."
+                                        data-question-id="${q.id}"
+                                    >${q.answer || ''}</textarea>
+                                    <button 
+                                        class="submit-answer-btn" 
+                                        onclick="submitAnswer(${q.id})"
+                                    >
+                                        ${q.answer ? '✏️ Update Jawaban' : '📤 Kirim Jawaban'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `;
-            }).join('');
+                    `;
+                }).join('');
 
-            container.innerHTML = questionsHTML;
-            loading.style.display = 'none';
+                container.innerHTML = questionsHTML;
+                debug('Questions displayed:', { count: sortedData.length });
+            } catch (error) {
+                debug('Error displaying questions:', error);
+                showError('Gagal menampilkan pertanyaan', error);
+            }
         }
 
         // Submit answer
         async function submitAnswer(questionId) {
-  const q = questionsData.find(x => x.id === questionId);
-  const textarea = document.querySelector(`[data-question-id="${questionId}"]`);
-  const answer = (textarea?.value || '').trim();
-  if (!answer) return alert('Silakan masukkan jawaban terlebih dahulu');
+            try {
+                const q = questionsData.find(x => x.id === questionId);
+                if (!q) {
+                    throw new Error('Pertanyaan tidak ditemukan');
+                }
 
-  const res = await fetch(SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ rowNumber: q.rowNumber, answer })
-  });
-  const result = await res.json();
-  if (!result.ok) throw new Error(result.error || 'Gagal menyimpan');
+                const textarea = document.querySelector(`[data-question-id="${questionId}"]`);
+                const answer = (textarea?.value || '').trim();
+                
+                if (!answer) {
+                    alert('Silakan masukkan jawaban terlebih dahulu');
+                    return;
+                }
 
-  await loadQuestions();
-  const successMsg = document.getElementById('successMessage');
-  successMsg.style.display = 'block';
-  setTimeout(() => successMsg.style.display = 'none', 3000);
-}
+                const btn = document.querySelector(`[onclick="submitAnswer(${questionId})"]`);
+                btn.disabled = true;
+                btn.textContent = '⏳ Menyimpan...';
 
+                debug('Submitting answer:', { questionId, rowNumber: q.rowNumber, answerLength: answer.length });
+
+                const response = await fetch(CONFIG.SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        rowNumber: q.rowNumber, 
+                        answer: answer 
+                    })
+                });
+
+                const result = await response.json();
+                debug('Submit response:', result);
+
+                if (!result.ok) {
+                    throw new Error(result.error || 'Gagal menyimpan jawaban');
+                }
+
+                showSuccess('Jawaban berhasil disimpan!');
+                await loadQuestions(); // Reload to show updated data
+
+            } catch (error) {
+                debug('Error submitting answer:', error);
+                showError('Gagal menyimpan jawaban', error);
+            }
+        }
 
         // Load questions from Google Sheets
         async function loadQuestions() {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}!A1:E100?key=${API_KEY}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
+            if (isLoading) {
+                debug('Already loading, skipping...');
+                return;
+            }
 
-  const rows = (data.values || []).slice(1); // skip header
-  questionsData = rows.map((row, i) => ({
-    id: i + 1,
-    rowNumber: i + 2,
-    timestamp: row[0] || '',
-    name: row[1] || 'Penanya Anonim',
-    question: row[2] || '',
-    category: row[3] || 'Umum',
-    answer: row[4] || '',
-    status: row[4] ? 'answered' : 'pending'
-  }));
+            try {
+                isLoading = true;
+                const refreshBtn = document.getElementById('refreshBtn');
+                const loadingMsg = document.getElementById('loadingMessage');
+                
+                refreshBtn.disabled = true;
+                refreshBtn.textContent = '⏳ Loading...';
+                loadingMsg.style.display = 'block';
+                loadingMsg.textContent = 'Mengambil data dari Google Sheets...';
 
-  displayQuestions(questionsData);
-  updateStats(questionsData);
-}
+                debug('Loading questions from:', {
+                    sheetId: CONFIG.SHEET_ID,
+                    sheetName: CONFIG.SHEET_NAME
+                });
 
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${encodeURIComponent(CONFIG.SHEET_NAME)}!A1:E100?key=${CONFIG.API_KEY}`;
+                debug('Request URL:', url);
+
+                const response = await fetch(url);
+                debug('Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    debug('Response error:', errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const data = await response.json();
+                debug('Raw data received:', data);
+
+                const rows = (data.values || []);
+                debug('Rows count:', rows.length);
+
+                if (rows.length < 2) {
+                    questionsData = [];
+                    debug('No data rows found');
+                } else {
+                    const dataRows = rows.slice(1); // Skip header
+                    questionsData = dataRows.map((row, i) => {
+                        const questionData = {
+                            id: i + 1,
+                            rowNumber: i + 2,
+                            timestamp: row[0] || '',
+                            name: row[1] || 'Penanya Anonim',
+                            question: row[2] || '',
+                            category: row[3] || 'Umum',
+                            answer: row[4] || '',
+                            status: (row[4] && row[4].trim()) ? 'answered' : 'pending'
+                        };
+                        return questionData;
+                    });
+                    debug('Processed questions:', questionsData);
+                }
+
+                displayQuestions(questionsData);
+                updateStats(questionsData);
+                loadingMsg.style.display = 'none';
+
+            } catch (error) {
+                debug('Error loading questions:', error);
+                showError('Gagal memuat data dari Google Sheets', error);
+                
+                // Show empty state on error
+                document.getElementById('questionsList').innerHTML = `
+                    <div class="empty-state">
+                        <h3>❌ Gagal Memuat Data</h3>
+                        <p>Coba refresh halaman atau periksa koneksi internet</p>
+                        <button onclick="loadQuestions()" class="refresh-btn" style="margin-top: 1rem;">
+                            🔄 Coba Lagi
+                        </button>
+                    </div>
+                `;
+            } finally {
+                isLoading = false;
+                const refreshBtn = document.getElementById('refreshBtn');
+                refreshBtn.disabled = false;
+                refreshBtn.textContent = '🔄 Refresh Data';
+            }
+        }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            debug('DOM loaded, starting initialization...');
+            
+            // Enable debug mode for troubleshooting
+            if (window.location.hash === '#debug') {
+                document.getElementById('debugInfo').style.display = 'block';
+                debug('Debug mode enabled');
+            }
+
             loadQuestions();
             
             // Auto-refresh every 60 seconds
-            setInterval(loadQuestions, 60000);
+            setInterval(() => {
+                if (!isLoading) {
+                    debug('Auto-refreshing...');
+                    loadQuestions();
+                }
+            }, 60000);
         });
 
-        // Add some interactive features
+        // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
             // Ctrl+R to refresh
             if (e.ctrlKey && e.key === 'r') {
                 e.preventDefault();
                 loadQuestions();
             }
+            // Ctrl+D to toggle debug
+            if (e.ctrlKey && e.key === 'd') {
+                e.preventDefault();
+                const debugEl = document.getElementById('debugInfo');
+                debugEl.style.display = debugEl.style.display === 'none' ? 'block' : 'none';
+            }
+        });
+
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            debug('Global error:', e.error);
+        });
+
+        window.addEventListener('unhandledrejection', function(e) {
+            debug('Unhandled promise rejection:', e.reason);
         });
     </script>
 </body>
 </html>
-
-
