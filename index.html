@@ -43,6 +43,29 @@
         .form-button { display: inline-block; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 50px; font-size: 1.1rem; font-weight: bold; margin: 1rem 0; transition: all 0.3s; }
         .form-button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(30, 60, 114, 0.3); text-decoration: none; color: white; }
 
+        /* Debug Info */
+        .debug-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .debug-toggle {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
         /* QnA Card styles - FIXED GAP */
         .questions-display { margin-top: 3rem; }
         .questions-display h4 { color: #1e3c72; font-size: 1.5rem; margin-bottom: 1.2rem; text-align: center; }
@@ -57,6 +80,7 @@
             padding: 1.5rem;
             margin-bottom: 3rem; /* Increased gap antar pertanyaan */
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
         }
 
         .question-item:hover {
@@ -122,9 +146,38 @@
             padding: 0.4rem 0.7rem;
         }
 
-        /* Answer blocks */
+        .question-status {
+            background: #28a745;
+            color: white;
+            padding: 0.3rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .question-status.pending {
+            background: #ffc107;
+            color: #000;
+        }
+
+        /* Question and Answer blocks */
+        .question-block {
+            background: #f8fafc; 
+            padding: 1rem; 
+            border-radius: 12px; 
+            margin-top: 1rem; 
+            border-left: 4px solid #2a5298;
+        }
+
+        .question-block-header { 
+            font-weight: bold; 
+            color: #2a5298; 
+            margin-bottom: 0.5rem; 
+            font-size: 0.95rem; 
+        }
+
         .answer {
-            background: #f8f9fa; 
+            background: #f0f9f0; 
             padding: 1rem; 
             border-radius: 12px; 
             margin-top: 1rem; 
@@ -142,12 +195,35 @@
             white-space: pre-wrap;
         }
 
+        .no-answer {
+            background: #fff8dc;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+            text-align: center;
+            font-style: italic;
+        }
+
         /* Status & loading */
         .error-message { background: #fff3cd; color: #856404; padding: 1rem; border-radius: 8px; margin: 1rem 0; border: 1px solid #ffeaa7; }
         .success-indicator { background: #d4edda; color: #155724; padding: 0.5rem 1rem; border-radius: 6px; margin: 0.5rem 0; font-size: 0.9rem; display: inline-block; }
         .loading { text-align: center; padding: 2rem; color: #666; }
         .loading::after { content: "..."; animation: dots 2s infinite; }
         @keyframes dots { 0%{content:""} 25%{content:"."} 50%{content:".."} 75%{content:"..."} 100%{content:""} }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+        }
 
         /* Animations */
         @keyframes fadeInUp { from { opacity:0; transform: translateY(30px);} to {opacity:1; transform: translateY(0);} }
@@ -216,6 +292,13 @@
                     </div>
 
                     <div id="connectionStatus"></div>
+                    
+                    <!-- Debug Toggle -->
+                    <button class="debug-toggle" onclick="toggleDebug()">🔍 Debug Info</button>
+                    <div class="debug-info" id="debugInfo">
+                        <strong>Debug Information:</strong><br>
+                        <div id="debugContent"></div>
+                    </div>
                 </div>
 
                 <div class="questions-display" id="questionsDisplay">
@@ -238,139 +321,263 @@
     </footer>
 
     <script>
-  // === CONFIG ===
-  const SHEET_ID = '14gRlgi-XiDMPiaU-cga2FZE_n09NYIIFcTQo3xOskBU';
-  const API_KEY  = 'AIzaSyAoIM03NMmaPuKx4VuI40aWP0Ukoq-_HHA';
-  const SHEET_NAME = 'Form Responses 1';
+        // === CONFIG ===
+        const CONFIG = {
+            SHEET_ID: '14gRlgi-XiDMPiaU-cga2FZE_n09NYIIFcTQo3xOskBU',
+            API_KEY: 'AIzaSyAoIM03NMmaPuKx4VuI40aWP0Ukoq-_HHA',
+            SHEET_NAME: 'Form Responses 1'
+        };
 
-  // warna badge kategori
-  const categoryColors = {
-    'umum': '#6c757d',
-    'program kb': '#007bff',
-    'kegiatan kampung kb': '#28a745',
-    'layanan kesehatan': '#17a2b8',
-    'administrasi': '#fd7e14'
-  };
+        // Global variables
+        let questionsData = [];
+        let debugMode = false;
 
-  // helper: normalisasi header (buang teks di dalam kurung)
-  const norm = (s='') => s.toLowerCase()
-    .replace(/\(.*?\)/g,'')        // buang (…)
-    .replace(/\s+/g,' ')           // spasi berlebih
-    .trim();
+        // warna badge kategori
+        const categoryColors = {
+            'umum': '#6c757d',
+            'program kb': '#007bff',
+            'kegiatan kampung kb': '#28a745',
+            'layanan kesehatan': '#17a2b8',
+            'administrasi': '#fd7e14'
+        };
 
-  // waktu "x jam yang lalu"
-  function formatTime(ts){
-    if(!ts) return 'Waktu tidak diketahui';
-    const now = new Date(), t = new Date(ts);
-    const diff = now - t, h = Math.floor(diff/36e5), d = Math.floor(h/24);
-    if(d>0) return `${d} hari yang lalu`;
-    if(h>0) return `${h} jam yang lalu`;
-    return 'Baru saja';
-  }
+        // Debug function
+        function debug(message, data = null) {
+            console.log('DEBUG:', message, data);
+            if (debugMode) {
+                const debugEl = document.getElementById('debugContent');
+                if (debugEl) {
+                    debugEl.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
+                    if (data) {
+                        debugEl.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                    }
+                    debugEl.scrollTop = debugEl.scrollHeight;
+                }
+            }
+        }
 
-  // status koneksi
-  function showStatus(ok,msg){
-    const el = document.getElementById('connectionStatus');
-    el.innerHTML = ok
-      ? `<div class="success-indicator">✅ Terhubung ke database - Data real time aktif</div>`
-      : `<div class="error-message">⚠️ ${msg} - Menampilkan data contoh sementara</div>`;
-  }
+        // Toggle debug mode
+        function toggleDebug() {
+            debugMode = !debugMode;
+            const debugEl = document.getElementById('debugInfo');
+            debugEl.style.display = debugMode ? 'block' : 'none';
+            if (debugMode) {
+                debug('Debug mode enabled');
+            }
+        }
 
-  // render kartu QnA
-  function render(list, real=false){
-    const wrap = document.getElementById('questionsDisplay');
-    const load = document.getElementById('loadingMessage');
+        // waktu "x jam yang lalu"
+        function formatTime(timestamp) {
+            if (!timestamp) return 'Waktu tidak diketahui';
+            
+            try {
+                const now = new Date();
+                const date = new Date(timestamp);
+                
+                if (isNaN(date.getTime())) {
+                    debug('Invalid timestamp:', timestamp);
+                    return 'Format waktu tidak valid';
+                }
+                
+                const diffMs = now - date;
+                const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                const diffDays = Math.floor(diffHours / 24);
+                
+                if (diffHours < 1) return 'Baru saja';
+                if (diffHours < 24) return `${diffHours} jam yang lalu`;
+                if (diffDays < 7) return `${diffDays} hari yang lalu`;
+                return date.toLocaleDateString('id-ID');
+            } catch (error) {
+                debug('Error formatting time:', { timestamp, error });
+                return 'Error waktu';
+            }
+        }
 
-    const info = real
-      ? `<p style="text-align:center;color:#28a745;font-size:.9rem;margin-bottom:1.5rem">📡 Data real-time dari Google Sheets</p>`
-      : `<p style="text-align:center;color:#ffc107;font-size:.9rem;margin-bottom:1.5rem">⚠️ Menampilkan data contoh</p>`;
+        // status koneksi
+        function showStatus(ok, msg) {
+            const el = document.getElementById('connectionStatus');
+            if (!el) return;
+            
+            el.innerHTML = ok
+                ? `<div class="success-indicator">✅ Terhubung ke database - Data real time aktif (${questionsData.length} pertanyaan)</div>`
+                : `<div class="error-message">⚠️ ${msg} - Coba refresh halaman</div>`;
+        }
 
-    const html = (list||[]).map(q=>{
-      const catKey = (q.category||'Umum').toLowerCase();
-      const catColor = categoryColors[catKey] || categoryColors.umum;
-      return `
-        <div class="question-item">
-          <div class="question-header">
-            <div>
-              <div class="question-author">👤 ${q.name || 'Penanya Anonim'}</div>
-              ${q.email ? `<div style="font-size:.9rem;color:#6b7280;margin-top:2px">✉️ ${q.email}</div>`:''}
-            </div>
-            <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
-              <span class="question-category" style="background:${catColor}">📂 ${q.category || 'Umum'}</span>
-              <span class="question-time">🕒 ${q.time || 'Waktu tidak diketahui'}</span>
-            </div>
-          </div>
+        // render kartu QnA
+        function renderQuestions(questions, isRealData = false) {
+            const displayEl = document.getElementById('questionsDisplay');
+            const loadingEl = document.getElementById('loadingMessage');
 
-          <div class="answer" style="background:#f8fafc;border-left:4px solid #16a34a;">
-            <div class="answer-header" style="color:#16a34a;">❓ Pertanyaan yang ditanyakan:</div>
-            <div class="answer-text">${q.question || '-'}</div>
-          </div>
+            if (!displayEl) return;
 
-          ${q.answer ? `
-          <div class="answer" style="margin-top:12px;">
-            <div class="answer-header">💡 Jawaban:</div>
-            <div class="answer-text">${q.answer}</div>
-          </div>`:''}
-        </div>
-      `;
-    }).join('') || `
-      <div class="question-item">
-        <p style="text-align:center;color:#666;">Belum ada pertanyaan. Jadilah yang pertama bertanya!</p>
-      </div>
-    `;
+            // Hide loading
+            if (loadingEl) loadingEl.style.display = 'none';
 
-    wrap.innerHTML = `<h4>💬 Pertanyaan & Jawaban Terbaru</h4>${info}${html}`;
-    if(load) load.style.display = 'none';
-  }
+            const statusInfo = isRealData
+                ? `<p style="text-align:center;color:#28a745;font-size:.9rem;margin-bottom:1.5rem">📡 Data real-time dari Google Sheets (${questions.length} pertanyaan)</p>`
+                : `<p style="text-align:center;color:#ffc107;font-size:.9rem;margin-bottom:1.5rem">⚠️ Tidak dapat memuat data dari server</p>`;
 
-  // ambil data dari Google Sheets, mengikuti header GForm kamu
-  async function loadFromSheet(){
-    try{
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
-      const r = await fetch(url);
-      if(!r.ok) throw new Error(`HTTP ${r.status}`);
-      const j = await r.json();
+            if (!questions || questions.length === 0) {
+                displayEl.innerHTML = `
+                    <h4>💬 Pertanyaan & Jawaban Terbaru</h4>
+                    ${statusInfo}
+                    <div class="empty-state">
+                        <h3>📝 Belum Ada Pertanyaan</h3>
+                        <p>Jadilah yang pertama mengajukan pertanyaan!</p>
+                        <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
+                            Gunakan tombol "Ajukan Pertanyaan Sekarang" di atas untuk bertanya.
+                        </p>
+                    </div>
+                `;
+                return;
+            }
 
-      if(!j.values || j.values.length < 2){
-        showStatus(false,'Belum ada data di spreadsheet');
-        render([],false);
-        return;
-      }
+            const questionsHTML = questions.map((q, index) => {
+                const categoryKey = (q.category || 'umum').toLowerCase();
+                const categoryColor = categoryColors[categoryKey] || categoryColors.umum;
+                
+                return `
+                    <div class="question-item">
+                        <div class="question-header">
+                            <div>
+                                <div class="question-author">👤 ${q.name || 'Penanya Anonim'}</div>
+                                ${q.email ? `<div style="font-size:.9rem;color:#6b7280;margin-top:2px">✉️ ${q.email}</div>` : ''}
+                            </div>
+                            <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+                                <span class="question-category" style="background:${categoryColor}">📂 ${q.category || 'Umum'}</span>
+                                <span class="question-time">🕒 ${q.time}</span>
+                                <span class="question-status ${q.hasAnswer ? '' : 'pending'}">
+                                    ${q.hasAnswer ? '✅ Dijawab' : '⏳ Menunggu'}
+                                </span>
+                            </div>
+                        </div>
 
-      const headers = j.values[0].map(norm);
-      const rows = j.values.slice(1);
+                        <div class="question-block">
+                            <div class="question-block-header">❓ Pertanyaan:</div>
+                            <div class="answer-text">${q.question || 'Pertanyaan tidak tersedia'}</div>
+                        </div>
 
-      // index kolom (berdasarkan nama di GForm kamu)
-      const idx = {
-        timestamp: 0, // kolom A
-        name: headers.indexOf('nama lengkap'),
-        email: headers.indexOf('email'),
-        category: headers.indexOf('kategori pertanyaan'),
-        question: headers.indexOf('pertanyaan anda'),
-        answer: headers.indexOf('jawaban') // opsional
-      };
+                        ${q.hasAnswer ? `
+                            <div class="answer">
+                                <div class="answer-header">💡 Jawaban:</div>
+                                <div class="answer-text">${q.answer}</div>
+                            </div>
+                        ` : `
+                            <div class="no-answer">
+                                ⏳ Jawaban sedang dipersiapkan oleh tim ahli kami. Mohon tunggu dalam 1x24 jam.
+                            </div>
+                        `}
+                    </div>
+                `;
+            }).join('');
 
-      // map baris
-      const data = rows.map(r => ({
-        name: idx.name >=0 ? r[idx.name] : '',
-        email: idx.email>=0 ? r[idx.email]: '',
-        category: idx.category>=0 ? r[idx.category] : 'Umum',
-        question: idx.question>=0 ? r[idx.question] : '',
-        answer: idx.answer>=0 ? (r[idx.answer]||'') : '',
-        time: formatTime(r[idx.timestamp])
-      })).reverse();
+            displayEl.innerHTML = `
+                <h4>💬 Pertanyaan & Jawaban Terbaru</h4>
+                ${statusInfo}
+                ${questionsHTML}
+            `;
 
-      showStatus(true,'');
-      render(data,true);
-    }catch(e){
-      console.error(e);
-      showStatus(false,'Gagal memuat data');
-      render([],false);
-    }
-  }
+            debug('Questions rendered:', { count: questions.length, isRealData });
+        }
 
-  document.addEventListener('DOMContentLoaded', loadFromSheet);
-</script>
+        // ambil data dari Google Sheets
+        async function loadQuestionsFromSheet() {
+            try {
+                debug('Starting to load data from Google Sheets...');
+                
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${encodeURIComponent(CONFIG.SHEET_NAME)}!A1:E100?key=${CONFIG.API_KEY}`;
+                debug('Request URL:', url);
 
+                const response = await fetch(url);
+                debug('Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    debug('Response error:', errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const data = await response.json();
+                debug('Raw data from API:', data);
+
+                if (!data.values || data.values.length < 2) {
+                    debug('No data found in spreadsheet');
+                    showStatus(false, 'Belum ada data di spreadsheet');
+                    renderQuestions([], false);
+                    return;
+                }
+
+                const rows = data.values;
+                const headers = rows[0];
+                const dataRows = rows.slice(1);
+
+                debug('Headers:', headers);
+                debug('Data rows:', dataRows);
+
+                // Map data sesuai dengan struktur Google Form
+                // Kolom: Timestamp | Nama | Pertanyaan | Kategori | Jawaban
+                const questions = dataRows.map((row, index) => {
+                    const questionData = {
+                        id: index + 1,
+                        timestamp: row[0] || '',
+                        name: row[1] || 'Penanya Anonim',
+                        question: row[2] || '',
+                        category: row[3] || 'Umum',
+                        answer: row[4] || '',
+                        email: row[5] || '', // jika ada kolom email
+                        time: formatTime(row[0]),
+                        hasAnswer: !!(row[4] && row[4].trim())
+                    };
+                    return questionData;
+                });
+
+                // Sort by newest first
+                const sortedQuestions = questions.sort((a, b) => {
+                    try {
+                        return new Date(b.timestamp) - new Date(a.timestamp);
+                    } catch (e) {
+                        return 0;
+                    }
+                });
+
+                debug('Processed questions:', sortedQuestions);
+
+                questionsData = sortedQuestions;
+                showStatus(true, '');
+                renderQuestions(sortedQuestions, true);
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                debug('Error loading questions:', error);
+                showStatus(false, `Gagal memuat data: ${error.message}`);
+                renderQuestions([], false);
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            debug('DOM loaded, initializing...');
+            loadQuestionsFromSheet();
+
+            // Auto-refresh every 30 seconds
+            setInterval(() => {
+                debug('Auto-refreshing questions...');
+                loadQuestionsFromSheet();
+            }, 30000);
+        });
+
+        // Add keyboard shortcut for debug
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'd') {
+                e.preventDefault();
+                toggleDebug();
+            }
+        });
+
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            debug('Global error:', e.error);
+        });
+    </script>
 </body>
 </html>
