@@ -115,6 +115,11 @@
             color: #1e3c72;
         }
 
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
         .refresh-btn {
             background: #28a745;
             color: white;
@@ -135,6 +140,21 @@
             cursor: not-allowed;
         }
 
+        .preview-btn {
+            background: #17a2b8;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .preview-btn:hover {
+            background: #138496;
+        }
+
         /* Question Items */
         .question-list {
             max-height: 600px;
@@ -145,6 +165,7 @@
             padding: 1.5rem;
             border-bottom: 1px solid #f1f3f4;
             transition: background 0.3s;
+            position: relative;
         }
 
         .question-item:hover {
@@ -172,6 +193,7 @@
             display: flex;
             gap: 1rem;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .author-name {
@@ -195,6 +217,12 @@
             font-size: 0.8rem;
         }
 
+        .question-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
         .question-status {
             padding: 0.25rem 0.75rem;
             border-radius: 12px;
@@ -210,6 +238,21 @@
         .status-pending {
             background: #fff3cd;
             color: #856404;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
         }
 
         .question-text {
@@ -285,6 +328,113 @@
             transform: none;
         }
 
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: #1e3c72;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            padding: 0.5rem;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        /* User Preview Styles */
+        .preview-question {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .preview-question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .preview-author {
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .preview-time {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .preview-question-text {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .preview-answer {
+            background: #e8f5e8;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .preview-answer-label {
+            font-weight: bold;
+            color: #155724;
+            margin-bottom: 0.5rem;
+        }
+
+        .no-answer {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            padding: 2rem;
+        }
+
         /* Loading States */
         .loading {
             text-align: center;
@@ -347,6 +497,62 @@
             font-family: monospace;
             font-size: 0.8rem;
             display: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* Confirmation Dialog */
+        .confirm-dialog {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .confirm-title {
+            font-size: 1.2rem;
+            color: #dc3545;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .confirm-message {
+            margin-bottom: 1.5rem;
+            color: #666;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .confirm-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .confirm-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .confirm-delete:hover {
+            background: #c82333;
+        }
+
+        .confirm-cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        .confirm-cancel:hover {
+            background: #5a6268;
         }
 
         /* Responsive */
@@ -378,6 +584,17 @@
 
             .submit-answer-btn {
                 width: 100%;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+                padding: 1rem;
             }
         }
 
@@ -453,14 +670,52 @@
         <div class="questions-section">
             <div class="section-header">
                 <h2 class="section-title">📋 Daftar Pertanyaan</h2>
-                <button class="refresh-btn" onclick="loadQuestions()" id="refreshBtn">
-                    🔄 Refresh Data
-                </button>
+                <div class="header-actions">
+                    <button class="preview-btn" onclick="showUserPreview()">
+                        👁️ Lihat Tampilan User
+                    </button>
+                    <button class="refresh-btn" onclick="loadQuestions()" id="refreshBtn">
+                        🔄 Refresh Data
+                    </button>
+                </div>
             </div>
             
             <div class="question-list" id="questionsList">
                 <div class="loading" id="loadingMessage">
                     Memuat data dari Google Sheets
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Preview Modal -->
+    <div id="userPreviewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">👁️ Tampilan User - QnA Kampung KB</h2>
+                <button class="close-btn" onclick="closeModal('userPreviewModal')">&times;</button>
+            </div>
+            <div id="userPreviewContent">
+                <div class="loading">Memuat tampilan user...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content">
+            <div class="confirm-dialog">
+                <div class="confirm-title">🗑️ Hapus Pertanyaan</div>
+                <div class="confirm-message">
+                    Apakah Anda yakin ingin menghapus pertanyaan ini? Tindakan ini tidak dapat dibatalkan.
+                </div>
+                <div class="confirm-actions">
+                    <button class="confirm-btn confirm-delete" onclick="confirmDelete()">
+                        🗑️ Ya, Hapus
+                    </button>
+                    <button class="confirm-btn confirm-cancel" onclick="closeModal('deleteConfirmModal')">
+                        ❌ Batal
+                    </button>
                 </div>
             </div>
         </div>
@@ -478,6 +733,7 @@
         // Global variables
         let questionsData = [];
         let isLoading = false;
+        let deleteQuestionId = null;
 
         // Category colors
         const categoryColors = {
@@ -610,9 +866,14 @@
                                         📂 ${q.category || 'Umum'}
                                     </span>
                                 </div>
-                                <span class="question-status ${q.status === 'answered' ? 'status-answered' : 'status-pending'}">
-                                    ${q.status === 'answered' ? '✅ Sudah Dijawab' : '⏳ Menunggu Jawaban'}
-                                </span>
+                                <div class="question-actions">
+                                    <span class="question-status ${q.status === 'answered' ? 'status-answered' : 'status-pending'}">
+                                        ${q.status === 'answered' ? '✅ Sudah Dijawab' : '⏳ Menunggu Jawaban'}
+                                    </span>
+                                    <button class="delete-btn" onclick="deleteQuestion(${q.id})" title="Hapus Pertanyaan">
+                                        🗑️ Hapus
+                                    </button>
+                                </div>
                             </div>
                             
                             <div class="question-text">
@@ -679,6 +940,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
+                        action: 'updateAnswer',
                         rowNumber: q.rowNumber, 
                         answer: answer 
                     })
@@ -697,6 +959,132 @@
             } catch (error) {
                 debug('Error submitting answer:', error);
                 showError('Gagal menyimpan jawaban', error);
+            } finally {
+                // Reset button state
+                const btn = document.querySelector(`[onclick="submitAnswer(${questionId})"]`);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = btn.textContent.includes('Update') ? '✏️ Update Jawaban' : '📤 Kirim Jawaban';
+                }
+            }
+        }
+
+        // Delete question
+        function deleteQuestion(questionId) {
+            const question = questionsData.find(q => q.id === questionId);
+            if (!question) {
+                showError('Pertanyaan tidak ditemukan');
+                return;
+            }
+
+            deleteQuestionId = questionId;
+            document.getElementById('deleteConfirmModal').style.display = 'block';
+        }
+
+        // Confirm delete
+        async function confirmDelete() {
+            if (!deleteQuestionId) return;
+
+            try {
+                const question = questionsData.find(q => q.id === deleteQuestionId);
+                if (!question) throw new Error('Pertanyaan tidak ditemukan');
+
+                debug('Deleting question:', { questionId: deleteQuestionId, rowNumber: question.rowNumber });
+
+                const response = await fetch(CONFIG.SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'deleteRow',
+                        rowNumber: question.rowNumber
+                    })
+                });
+
+                const result = await response.json();
+                debug('Delete response:', result);
+
+                if (!result.ok) {
+                    throw new Error(result.error || 'Gagal menghapus pertanyaan');
+                }
+
+                showSuccess('Pertanyaan berhasil dihapus!');
+                closeModal('deleteConfirmModal');
+                deleteQuestionId = null;
+                await loadQuestions(); // Reload data
+
+            } catch (error) {
+                debug('Error deleting question:', error);
+                showError('Gagal menghapus pertanyaan', error);
+            }
+        }
+
+        // Show user preview
+        function showUserPreview() {
+            const modal = document.getElementById('userPreviewModal');
+            const content = document.getElementById('userPreviewContent');
+            
+            modal.style.display = 'block';
+            content.innerHTML = '<div class="loading">Memuat tampilan user...</div>';
+
+            // Filter only answered questions for user view
+            const answeredQuestions = questionsData.filter(q => q.status === 'answered');
+
+            if (answeredQuestions.length === 0) {
+                content.innerHTML = `
+                    <div class="no-answer">
+                        <h3>🤔 Belum Ada Jawaban</h3>
+                        <p>Jawaban yang sudah diberikan akan muncul di sini</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort by newest first
+            const sortedQuestions = answeredQuestions.sort((a, b) => {
+                try {
+                    return new Date(b.timestamp) - new Date(a.timestamp);
+                } catch (e) {
+                    return 0;
+                }
+            });
+
+            const previewHTML = sortedQuestions.map(q => {
+                const categoryKey = (q.category || 'umum').toLowerCase();
+                const categoryColor = categoryColors[categoryKey] || categoryColors.umum;
+
+                return `
+                    <div class="preview-question">
+                        <div class="preview-question-header">
+                            <div>
+                                <span class="preview-author">👤 ${q.name || 'Penanya Anonim'}</span>
+                                <span class="question-category" style="background: ${categoryColor}; margin-left: 1rem;">
+                                    📂 ${q.category || 'Umum'}
+                                </span>
+                            </div>
+                            <span class="preview-time">🕒 ${formatTime(q.timestamp)}</span>
+                        </div>
+                        
+                        <div class="preview-question-text">
+                            <strong>❓ Pertanyaan:</strong><br>
+                            ${q.question || 'Pertanyaan tidak tersedia'}
+                        </div>
+                        
+                        <div class="preview-answer">
+                            <div class="preview-answer-label">💡 Jawaban:</div>
+                            <div>${q.answer || 'Belum ada jawaban'}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            content.innerHTML = previewHTML;
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            if (modalId === 'deleteConfirmModal') {
+                deleteQuestionId = null;
             }
         }
 
@@ -808,6 +1196,19 @@
             }, 60000);
         });
 
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                    if (modal.id === 'deleteConfirmModal') {
+                        deleteQuestionId = null;
+                    }
+                }
+            });
+        }
+
         // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
             // Ctrl+R to refresh
@@ -820,6 +1221,18 @@
                 e.preventDefault();
                 const debugEl = document.getElementById('debugInfo');
                 debugEl.style.display = debugEl.style.display === 'none' ? 'block' : 'none';
+            }
+            // Escape to close modals
+            if (e.key === 'Escape') {
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(modal => {
+                    if (modal.style.display === 'block') {
+                        modal.style.display = 'none';
+                        if (modal.id === 'deleteConfirmModal') {
+                            deleteQuestionId = null;
+                        }
+                    }
+                });
             }
         });
 
