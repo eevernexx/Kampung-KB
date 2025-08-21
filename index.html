@@ -515,15 +515,15 @@
                 debug('Data rows:', dataRows);
 
                 // Map data sesuai dengan struktur Google Form yang benar
-                // Berdasarkan screenshot: Timestamp | Nama | Email | Pertanyaan | Kategori | Jawaban
+                // Berdasarkan screenshot: Timestamp | Nama | Email | Kategori | Pertanyaan | Jawaban
                 const questions = dataRows.map((row, index) => {
                     const questionData = {
                         id: index + 1,
                         timestamp: row[0] || '',
                         name: row[1] || 'Penanya Anonim',
                         email: row[2] || '', // kolom email ada di posisi ke-3
-                        question: row[3] || '', // pertanyaan di posisi ke-4
-                        category: row[4] || 'Umum', // kategori di posisi ke-5
+                        category: row[3] || 'Umum', // kategori di posisi ke-4
+                        question: row[4] || '', // pertanyaan di posisi ke-5
                         answer: row[5] || '', // jawaban di posisi ke-6
                         time: formatTime(row[0]),
                         hasAnswer: !!(row[5] && row[5].trim()) // cek jawaban di kolom ke-6
