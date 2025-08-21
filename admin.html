@@ -621,7 +621,7 @@ let questionsData = [];
 
         // Load questions from Google Sheets
         async function loadQuestions() {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}!A1:E100?key=${API_KEY}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
@@ -662,4 +662,5 @@ let questionsData = [];
     </script>
 </body>
 </html>
+
 
